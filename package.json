@@ -16,5 +16,11 @@
   },
   "volta": {
     "node": "21.7.3"
+  },
+  "devDependencies": {
+    "@unocss/nuxt": "^0.59.4",
+    "eslint": "^9.1.1",
+    "prettier": "^3.2.5",
+    "sass": "^1.75.0"
   }
 }
