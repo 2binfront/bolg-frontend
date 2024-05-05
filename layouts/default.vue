@@ -21,7 +21,8 @@
 }
 
 .blog-footer {
-  background-color: aliceblue;
+  background-color: black;
+  color: #fff;
   height: 5vh;
   max-height: 200px;
 }
