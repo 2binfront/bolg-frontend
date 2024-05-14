@@ -11,12 +11,12 @@ export default defineConfig({
       warn: true,
     }),
   ],
-  preflights: [
-    {
-      getCSS: () => readFile('./node_modules/@unocss/reset/tailwind.css', 'utf-8'),
-      layer: 'preflights',
-    },
-  ],
+  //   preflights: [
+  //     {
+  //       getCSS: () => readFile('./node_modules/@unocss/reset/tailwind.css', 'utf-8'),
+  //       layer: 'preflights',
+  //     },
+  //   ],
   transformers: [transformerDirectives(), transformerVariantGroup()],
   shortcuts: {
     frc: 'flex items-center justify-center',

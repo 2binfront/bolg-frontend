@@ -15,8 +15,8 @@
 
 <style lang="scss">
 .blog-header {
-  background-color: aliceblue;
-  height: 5vh;
+  background-color: #f3f3f3;
+  //   height: 5vh;
   max-height: 200px;
 }
 

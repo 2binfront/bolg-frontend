@@ -36,15 +36,14 @@ const html = marked.parse(articleTest);
       <!-- <NuxtLink to="/archive" ml>Archive</NuxtLink> -->
       <NuxtLink to="/about" ml>About</NuxtLink>
     </div>
-    <!-- <MDC :value="articleTest" tag="article"></MDC> -->
-    <MDC v-slot="{ data, body }" :value="articleTest">
+    <!-- <MDC v-slot="{ data, body }" :value="articleTest">
       <article class="p-4 prose">
         <h1 v-if="data?.title">
           {{ data.title }}
         </h1>
         <MDCRenderer v-if="body" :body="body" :data="data" />
       </article>
-    </MDC>
+    </MDC> -->
     <div v-html="html"></div>
   </div>
 </template>
