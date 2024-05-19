@@ -15,14 +15,14 @@
 
 <style lang="scss">
 .blog-header {
-  background-color: #f3f3f3;
+  //   background-color: #f3f3f3;
   //   height: 5vh;
   max-height: 200px;
 }
 
 .blog-footer {
-  background-color: black;
-  color: #fff;
+  //   background-color: black;
+  color: #000;
   height: 5vh;
   max-height: 200px;
 }

@@ -18,15 +18,26 @@ const gotoPage = (id: number) => {
       <!-- <NuxtLink to="/archive" ml>Archive</NuxtLink> -->
       <NuxtLink to="/about" ml>About</NuxtLink>
     </div>
-    <div v-for="(article, index) in articleList" @click="gotoPage(article.id)" class="cp">
-      <span>{{ `${article.title} ${article.time}` }}</span>
-      <span>{{ `${article.content}` }}</span>
-      <span>{{ `${article.catalog} ${article.tag}` }}</span>
+    <div v-for="(article, index) in articleList" @click="gotoPage(article.id)" class="cp my article-brief">
+      <div>
+        <span>{{ `${article.title} ${article.time}` }}</span>
+
+        <span ml>{{ `${article.catalog} ${article.tag}` }}</span>
+      </div>
+      <div>
+        <span>{{ `${article.content}` }}</span>
+      </div>
     </div>
   </div>
 </template>
 
 <style lang="scss" scoped>
 .home-links {
+}
+
+.article-brief {
+  &:hover {
+    color: #551a8b;
+  }
 }
 </style>
