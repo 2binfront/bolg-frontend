@@ -1,9 +1,9 @@
 <script lang="ts" setup>
-const articleList = [
-  { title: 'test1', time: '20011031', tag: 'test', catalog: 'test', content: 'this is a test article', id: 0 },
-  { title: 'test1', time: '20011031', tag: 'test', catalog: 'test', content: 'this is a test article', id: 1 },
-  { title: 'test1', time: '20011031', tag: 'test', catalog: 'test', content: 'this is a test article', id: 2 },
-];
+// import { prefix } from '/public/config.js';
+const articleList = ref<any>([]);
+onMounted(async () => {
+  articleList.value = await $fetch(`/api/blog/article`);
+});
 const gotoPage = (id: number) => {
   const router = useRouter();
   router.push(`/article?id=${id}`);
@@ -20,12 +20,11 @@ const gotoPage = (id: number) => {
     </div>
     <div v-for="(article, index) in articleList" @click="gotoPage(article.id)" class="cp my article-brief">
       <div>
-        <span>{{ `${article.title} ${article.time}` }}</span>
-
-        <span ml>{{ `${article.catalog} ${article.tag}` }}</span>
+        <span>{{ `Created at ${article.createdAt}, Updated at ${article.updatedAt}` }}</span>
       </div>
-      <div>
-        <span>{{ `${article.content}` }}</span>
+      <div class="flex items-end">
+        <h3>{{ `${article.title}` }}</h3>
+        <div ml>{{ `${article.category} ` }}</div>
       </div>
     </div>
   </div>
