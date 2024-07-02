@@ -5,8 +5,7 @@ onMounted(async () => {
   articleList.value = await $fetch(`/api/blog/article`);
 });
 const gotoPage = (id: number) => {
-  const router = useRouter();
-  router.push(`/article?id=${id}`);
+  navigateTo(`/article?id=${id}`);
 };
 </script>
 
@@ -18,7 +17,7 @@ const gotoPage = (id: number) => {
       <!-- <NuxtLink to="/archive" ml>Archive</NuxtLink> -->
       <NuxtLink to="/about" ml>About</NuxtLink>
     </div>
-    <div v-for="(article, index) in articleList" @click="gotoPage(article.id)" class="cp my article-brief">
+    <div v-for="(article, index) in articleList" @click="gotoPage(article._id)" class="cp my article-brief">
       <div>
         <span>{{ `Created at ${article.createdAt}, Updated at ${article.updatedAt}` }}</span>
       </div>

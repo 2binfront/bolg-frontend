@@ -1,31 +1,51 @@
 <script lang="ts" setup>
-import { parseMarkdown } from '@nuxtjs/mdc/runtime';
 import { marked } from 'marked';
-const articleTest = `
----
-title: Sam
----
+import type { ArticleInfo } from '~/interface';
+const userStore = useUserStore();
+const article = ref<ArticleInfo>({
+  _id: '',
+  articleId: '',
+  title: '',
+  createdAt: '2023-07-21T15:32:35.000Z',
+  updatedAt: '2023-07-21T15:32:35.000Z',
+  content: '',
+  category: '',
+  tags: [],
+});
 
-# Simple
+const editing = ref(false);
+const handleEdit = () => {
+  if (userStore.canEdit) {
+    editing.value = !editing.value;
+  }
+};
+const handleSave = async () => {
+  try {
+    const route = useRoute();
+    await $fetch(`/api/blog/article/${route.query.id}`, {
+      method: 'patch',
+      headers: {
+        Authorization: `Bearer ${userStore.access_token}`,
+      },
+      body: {
+        title: article.value.title,
+        content: article.value.content,
+        category: article.value.category,
+        tags: article.value.tags,
+      },
+    });
+    editing.value = false;
+  } catch (error) {}
+};
+const loading = ref(false);
+onMounted(async () => {
+  loading.value = true;
+  const route = useRoute();
+  article.value = await $fetch(`/api/blog/article/${route.query.id}`);
+  loading.value = false;
+});
 
-Simple paragraph
-
-Inline code \`const codeInline: string = 'highlighted code inline'\`{lang="ts"} can be contained in paragraphs.
-
-Code block:
-\`\`\`typescript[filename]{1,3-5}meta
-import { parseMarkdown } from '@nuxtjs/mdc/runtime'
-
-async function main(mdc: string) {
-  const ast = await parseMarkdown(mdc)
-  // Do your magic with parsed AST tree
-
-  return ast // [!code ++]
-  return ast // [!code --]
-}
-\`\`\`
-`;
-const html = marked.parse(articleTest);
+const html = computed(() => marked.parse(article.value.content));
 </script>
 
 <template>
@@ -36,15 +56,26 @@ const html = marked.parse(articleTest);
       <!-- <NuxtLink to="/archive" ml>Archive</NuxtLink> -->
       <NuxtLink to="/about" ml>About</NuxtLink>
     </div>
-    <!-- <MDC v-slot="{ data, body }" :value="articleTest">
-      <article class="p-4 prose">
-        <h1 v-if="data?.title">
-          {{ data.title }}
-        </h1>
-        <MDCRenderer v-if="body" :body="body" :data="data" />
-      </article>
-    </MDC> -->
-    <div v-html="html"></div>
+    <div class="mt">
+      <div class="frb">
+        <div class="flex items-end">
+          <div @dblclick="handleEdit">
+            <h1 v-if="!editing">{{ article.title }}</h1>
+            <input v-else v-model="article.title" class="w-400px text-24px fw700" />
+          </div>
+          <span class="ml-2">{{ `Created at ${article.createdAt}, Updated at ${article.updatedAt}` }}</span>
+        </div>
+        <button v-if="editing" class="mr" @click="handleSave">Save</button>
+      </div>
+      <div class="mt-2 flex">
+        <div v-if="editing" class="mr flex-1">
+          <ClientOnly fallback-tag="span" fallback="Loading...">
+            <mavon-editor v-model="article.content" class="h-75vh" />
+          </ClientOnly>
+        </div>
+        <div v-else v-html="html" class="max-w-60vw"></div>
+      </div>
+    </div>
   </div>
 </template>
 
