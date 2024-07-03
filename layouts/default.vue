@@ -41,18 +41,25 @@ const handleLogin = async () => {
 
 <template>
   <div class="f-col h-100vh">
-    <header class="blog-header px pt-4 pb-2 flex" @click="checkUser">
-      <NuxtLink to="/" class="text-24px mr my-2">hh's blog</NuxtLink>
+    <header class="blog-header px pt-4 pb-2 frb" @click="checkUser">
+      <div class="flex">
+        <NuxtLink to="/" class="text-24px mr my-2">hh's blog</NuxtLink>
+        <div class="home-links">
+          <NuxtLink to="/category">Category</NuxtLink>
+          <NuxtLink to="/tag" ml>Tag</NuxtLink>
+          <NuxtLink to="/about" ml>About</NuxtLink>
+        </div>
+      </div>
       <div v-if="isLoginShow && !userStore.canEdit" class="flex-1 flex items-center">
         <input class="ml" type="password" show-password v-model="pwd" @keyup.enter="handleLogin" />
       </div>
       <div v-else-if="isLoginShow && userStore.canEdit" class="flex items-center">
         <button>Add Article</button>
-        <button>Edit Catalog</button>
+        <button>Edit category</button>
         <button>Edit Tags</button>
       </div>
     </header>
-    <main class="p pt-0 pl-0 ml flex-1">
+    <main class="px flex-1 box-border">
       <slot />
     </main>
     <footer class="blog-footer frc"> 2binfront@2024 </footer>
@@ -64,6 +71,11 @@ const handleLogin = async () => {
   //   background-color: #f3f3f3;
   //   height: 5vh;
   max-height: 200px;
+  .home-links {
+    margin: 8px 0;
+    display: flex;
+    align-items: end;
+  }
 }
 
 .blog-footer {

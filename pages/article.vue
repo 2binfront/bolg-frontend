@@ -10,13 +10,27 @@ const article = ref<ArticleInfo>({
   updatedAt: '2023-07-21T15:32:35.000Z',
   content: '',
   category: '',
-  tags: [],
+  tags: '',
 });
 
 const editing = ref(false);
 const handleEdit = () => {
   if (userStore.canEdit) {
     editing.value = !editing.value;
+    if (toolbars.value['bold']) {
+      subfield.value = false;
+      for (const item of Object.keys(toolbars.value)) {
+        toolbars.value[item] = false;
+        toolbars.value.navigation = true;
+        toolbars.value.fullscreen = true;
+      }
+    } else {
+      subfield.value = true;
+      for (const item of Object.keys(toolbars.value)) {
+        toolbars.value[item] = true;
+      }
+      toolbars.value['html'] = false;
+    }
   }
 };
 const handleSave = async () => {
@@ -31,7 +45,7 @@ const handleSave = async () => {
         title: article.value.title,
         content: article.value.content,
         category: article.value.category,
-        tags: article.value.tags,
+        tags: (article.value.tags as string).split(','),
       },
     });
     editing.value = false;
@@ -44,36 +58,70 @@ onMounted(async () => {
   article.value = await $fetch(`/api/blog/article/${route.query.id}`);
   loading.value = false;
 });
-
+const subfield = ref(false);
+const toolbars = ref<Record<string, boolean>>({
+  bold: false, // 粗体
+  italic: false, // 斜体
+  header: false, // 标题
+  underline: false, // 下划线
+  strikethrough: false, // 中划线
+  mark: false, // 标记
+  superscript: false, // 上角标
+  subscript: false, // 下角标
+  quote: false, // 引用
+  ol: false, // 有序列表
+  ul: false, // 无序列表
+  link: false, // 链接
+  imagelink: false, // 图片链接
+  code: false, // code
+  table: false, // 表格
+  fullscreen: false, // 全屏编辑
+  readmodel: true, // 沉浸式阅读
+  htmlcode: false, // 展示html源码
+  help: false, // 帮助
+  /* 1.3.5 */
+  undo: false, // 上一步
+  redo: false, // 下一步
+  trash: false, // 清空
+  save: false, // 保存（触发events中的save事件）
+  /* 1.4.2 */
+  navigation: true, // 导航目录
+  /* 2.1.8 */
+  alignleft: false, // 左对齐
+  aligncenter: false, // 居中
+  alignright: false, // 右对齐
+  /* 2.2.1 */
+  subfield: false, // 单双栏模式
+  preview: false, // 预览
+});
 const html = computed(() => marked.parse(article.value.content));
 </script>
 
 <template>
-  <div class="full">
-    <div class="home-links">
-      <NuxtLink to="/catalog">Catalog</NuxtLink>
-      <NuxtLink to="/tag" ml>Tag</NuxtLink>
-      <!-- <NuxtLink to="/archive" ml>Archive</NuxtLink> -->
-      <NuxtLink to="/about" ml>About</NuxtLink>
-    </div>
-    <div class="mt">
+  <div class="box-border flex flex-col full">
+    <div class="mt flex flex-col">
       <div class="frb">
         <div class="flex items-end">
           <div @dblclick="handleEdit">
-            <h1 v-if="!editing">{{ article.title }}</h1>
-            <input v-else v-model="article.title" class="w-400px text-24px fw700" />
+            <div v-if="!editing" class="flex items-end">
+              <h1>{{ article.title }} </h1>
+              <span class="ml-2">{{ `Created at ${article.createdAt}, Updated at ${article.updatedAt}` }}</span>
+            </div>
+            <div v-else>
+              <input v-model="article.title" class="w-400px text-24px fw700" />
+              <input v-model="article.category" class="w-100px text-18px fw700 ml" />
+              <input v-model="article.tags" class="w-400px text-16px fw700 ml" />
+            </div>
           </div>
-          <span class="ml-2">{{ `Created at ${article.createdAt}, Updated at ${article.updatedAt}` }}</span>
         </div>
         <button v-if="editing" class="mr" @click="handleSave">Save</button>
       </div>
-      <div class="mt-2 flex">
-        <div v-if="editing" class="mr flex-1">
-          <ClientOnly fallback-tag="span" fallback="Loading...">
-            <mavon-editor v-model="article.content" class="h-75vh" />
-          </ClientOnly>
+      <div class="mt-2 h-80vh">
+        <mavon-editor class="full" v-model="article.content" defaultOpen="preview" :subfield="subfield" :toolbars="toolbars" />
+        <!-- <div v-if="editing" class="mr flex-1">
+            <mavon-editor v-model="article.content" defaultOpen="preview" :subfield="false" class="h-75vh" />
         </div>
-        <div v-else v-html="html" class="max-w-60vw"></div>
+        <div v-else v-html="html" class="max-w-60vw"></div> -->
       </div>
     </div>
   </div>

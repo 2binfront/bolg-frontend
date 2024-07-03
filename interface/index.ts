@@ -6,5 +6,5 @@ export interface ArticleInfo {
   updatedAt: string;
   content: string;
   category: string;
-  tags: string[];
+  tags: string[] | string;
 }
