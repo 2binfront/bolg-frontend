@@ -45,11 +45,13 @@ const handleSave = async () => {
         title: article.value.title,
         content: article.value.content,
         category: article.value.category,
-        tags: (article.value.tags as string).split(','),
+        tags: typeof article.value.tags === 'string' ? (article.value.tags as string).split(',') : article.value.tags,
       },
     });
     editing.value = false;
-  } catch (error) {}
+  } catch (error) {
+    console.log(error);
+  }
 };
 const loading = ref(false);
 onMounted(async () => {
@@ -94,6 +96,7 @@ const toolbars = ref<Record<string, boolean>>({
   subfield: false, // 单双栏模式
   preview: false, // 预览
 });
+
 const html = computed(() => marked.parse(article.value.content));
 </script>
 
@@ -117,11 +120,12 @@ const html = computed(() => marked.parse(article.value.content));
         <button v-if="editing" class="mr" @click="handleSave">Save</button>
       </div>
       <div class="mt-2 h-80vh">
-        <mavon-editor class="full" v-model="article.content" defaultOpen="preview" :subfield="subfield" :toolbars="toolbars" />
-        <!-- <div v-if="editing" class="mr flex-1">
-            <mavon-editor v-model="article.content" defaultOpen="preview" :subfield="false" class="h-75vh" />
+        <div v-if="editing" class="mr flex-1">
+          <ClientOnly>
+            <mavon-editor class="h-80vh" v-model="article.content" :subfield="subfield" :toolbars="toolbars" />
+          </ClientOnly>
         </div>
-        <div v-else v-html="html" class="max-w-60vw"></div> -->
+        <div v-else v-html="html" class="max-w-50vw text-justify"></div>
       </div>
     </div>
   </div>

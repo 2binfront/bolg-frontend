@@ -34,7 +34,7 @@ const handleLogin = async () => {
       },
     });
     userStore.access_token = res.access_token;
-    userStore.checkAuth();
+    await userStore.checkAuth();
   } catch (error) {}
 };
 </script>

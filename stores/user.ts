@@ -16,14 +16,19 @@ export const useUserStore = defineStore('userStore', {
       this.exp = user.exp;
     },
     async checkAuth() {
-      const res: any = await $fetch('/api/blog/auth/profile', {
-        method: 'get',
-        headers: {
-          Authorization: `Bearer ${this.access_token}`,
-        },
-      });
-      if (res.exp && res.exp > new Date().getTime() / 1000) {
-        this.canEdit = true;
+      try {
+        const res: any = await $fetch('/api/blog/auth/profile', {
+          method: 'get',
+          headers: {
+            Authorization: `Bearer ${this.access_token}`,
+          },
+        });
+
+        if (res.exp && res.exp > new Date().getTime() / 1000) {
+          this.canEdit = true;
+        }
+      } catch (error) {
+        this.canEdit = false;
       }
     },
   },

@@ -2,6 +2,7 @@
 // import { prefix } from '/public/config.js';
 const articleStore = useArticleStore();
 onMounted(async () => {
+  articleStore.getAllArticles();
   //   articleList.value = await $fetch(`/api/blog/article`);
 });
 const gotoPage = (id: string) => {
