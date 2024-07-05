@@ -2,9 +2,6 @@
 const articleStore = useArticleStore();
 const route = useRoute();
 
-onMounted(async () => {
-  articleStore.getAllArticles();
-});
 const curArticles = computed(() => {
   if (route.query.tagId) {
     return articleStore.allArticles.filter((v) => v.tags.includes(route.query.tagId as string));

@@ -1,10 +1,9 @@
 <script setup lang="ts">
 const userStore = useUserStore();
 const articleStore = useArticleStore();
-
 onMounted(async () => {
-  await callOnce(async () => userStore.checkAuth());
-  await callOnce(async () => articleStore.getAllArticles());
+  await userStore.checkAuth();
+  await articleStore.getAllArticles();
 });
 </script>
 

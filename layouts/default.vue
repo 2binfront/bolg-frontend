@@ -43,7 +43,7 @@ const handleLogin = async () => {
   <div class="f-col h-100vh">
     <header class="blog-header px pt-4 pb-2 frb" @click="checkUser">
       <div class="flex">
-        <NuxtLink to="/" class="text-24px mr my-2">hh's blog</NuxtLink>
+        <NuxtLink to="/" class="text-26px mr my-2">hh's blog</NuxtLink>
         <div class="home-links">
           <NuxtLink to="/category">Category</NuxtLink>
           <NuxtLink to="/tag" ml>Tag</NuxtLink>
@@ -55,7 +55,7 @@ const handleLogin = async () => {
       </div>
       <div v-else-if="isLoginShow && userStore.canEdit" class="flex items-center">
         <button>Add Article</button>
-        <button>Edit category</button>
+        <button>Edit Categories</button>
         <button>Edit Tags</button>
       </div>
     </header>
@@ -72,6 +72,7 @@ const handleLogin = async () => {
   //   height: 5vh;
   max-height: 200px;
   .home-links {
+    font-size: 16px;
     margin: 8px 0;
     display: flex;
     align-items: end;

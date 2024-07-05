@@ -2,6 +2,7 @@
 import { marked } from 'marked';
 import type { ArticleInfo } from '~/interface';
 const userStore = useUserStore();
+const articleStore = useArticleStore();
 const article = ref<ArticleInfo>({
   _id: '',
   articleId: '',
@@ -53,11 +54,17 @@ const handleSave = async () => {
     console.log(error);
   }
 };
+const html = ref('');
 const loading = ref(false);
+const catologTree = ref<any>();
 onMounted(async () => {
   loading.value = true;
   const route = useRoute();
   article.value = await $fetch(`/api/blog/article/${route.query.id}`);
+  html.value = await marked.parse(article.value.content);
+  //   catologTree.value = getContentDirTree(html.value);
+  console.log(catologTree.value);
+
   loading.value = false;
 });
 const subfield = ref(false);
@@ -96,8 +103,6 @@ const toolbars = ref<Record<string, boolean>>({
   subfield: false, // 单双栏模式
   preview: false, // 预览
 });
-
-const html = computed(() => marked.parse(article.value.content));
 </script>
 
 <template>
@@ -108,24 +113,28 @@ const html = computed(() => marked.parse(article.value.content));
           <div @dblclick="handleEdit">
             <div v-if="!editing" class="flex items-end">
               <h1>{{ article.title }} </h1>
-              <span class="ml-2">{{ `Created at ${article.createdAt}, Updated at ${article.updatedAt}` }}</span>
+              <span class="ml-2 time-string">{{ `Created at ${formatTime(article.createdAt, 's')}, Updated at ${formatTime(article.updatedAt, 's')}` }}</span>
             </div>
             <div v-else>
               <input v-model="article.title" class="w-400px text-24px fw700" />
-              <input v-model="article.category" class="w-100px text-18px fw700 ml" />
-              <input v-model="article.tags" class="w-400px text-16px fw700 ml" />
+              <select v-model="article.category" class="w-100px text-18px fw700 ml">
+                <option v-for="item in articleStore.categories" :key="item._id" :value="item._id">{{ item.name }}</option>
+              </select>
+              <select v-model="article.tags" class="w-400px text-16px fw700 ml" multiple>
+                <option v-for="item in articleStore.tags" :key="item._id" :value="item._id">{{ item.name }}</option>
+              </select>
             </div>
           </div>
         </div>
         <button v-if="editing" class="mr" @click="handleSave">Save</button>
       </div>
-      <div class="mt-2 h-80vh">
+      <div class="mt-2 flex-1">
         <div v-if="editing" class="mr flex-1">
           <ClientOnly>
             <mavon-editor class="h-80vh" v-model="article.content" :subfield="subfield" :toolbars="toolbars" />
           </ClientOnly>
         </div>
-        <div v-else v-html="html" class="max-w-50vw text-justify"></div>
+        <div v-else v-html="html" ref="mdDom" class="max-w-50vw text-justify flex-1"></div>
       </div>
     </div>
   </div>

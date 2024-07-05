@@ -8,3 +8,15 @@ export interface ArticleInfo {
   category: string;
   tags: string[] | string;
 }
+export interface Category {
+  _id: string;
+  name: string;
+  createdAt?: string;
+  updatedAt?: string;
+}
+export interface Tag {
+  _id: string;
+  name: string;
+  createdAt?: string;
+  updatedAt?: string;
+}

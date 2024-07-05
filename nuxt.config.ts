@@ -1,7 +1,13 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 
 export default defineNuxtConfig({
-  devtools: { enabled: true },
+  devtools: {
+    enabled: true,
+
+    timeline: {
+      enabled: true,
+    },
+  },
   ssr: true, // 确保启用了SSR
   css: ['~/assets/style/main.scss'],
   modules: ['@unocss/nuxt', '@nuxtjs/mdc', '@nuxt/image', '@pinia/nuxt', '@pinia-plugin-persistedstate/nuxt'],
