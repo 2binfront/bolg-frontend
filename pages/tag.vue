@@ -5,13 +5,36 @@ const articleStore = useArticleStore();
 const showSpecificArticle = (tag: Tag) => {
   navigateTo(`/articles?tagId=${tag._id}`);
 };
+
+const addT = ref('');
+const editing = computed(() => {
+  const route = useRoute();
+  if (route.query.edit) {
+    return true;
+  } else {
+    return false;
+  }
+});
+
+const handleAddT = async () => {
+  await articleStore.addTag(addT.value);
+};
+const handleEditT = async (tag: any) => {
+  await articleStore.editTag(tag);
+};
 </script>
 
 <template>
   <div class="flex">
-    <div class="mx font-italic text-20px cp underline article-brief" v-for="tag in articleStore.tags" :key="tag._id" @click="showSpecificArticle(tag)">{{
-      tag.name
-    }}</div>
+    <div class="mx font-italic text-20px cp underline article-brief" v-for="tag in articleStore.tags" :key="tag._id" @click="showSpecificArticle(tag)">
+      <div v-if="!editing">
+        {{ tag.name }}
+      </div>
+      <div v-else>
+        <input class="text-20px fw700" type="text" v-model="tag.name" @keyup.enter="handleEditT(tag)" />
+      </div>
+    </div>
+    <div v-if="editing" class="ml-8 mt"> new Tag: <input type="text" v-model="addT" @keyup.enter="handleAddT" /> </div>
   </div>
 </template>
 

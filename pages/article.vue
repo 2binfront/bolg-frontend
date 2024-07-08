@@ -13,42 +13,57 @@ const article = ref<ArticleInfo>({
   category: '',
   tags: '',
 });
-
 const editing = ref(false);
 const handleEdit = () => {
   if (userStore.canEdit) {
     editing.value = !editing.value;
-    if (toolbars.value['bold']) {
-      subfield.value = false;
-      for (const item of Object.keys(toolbars.value)) {
-        toolbars.value[item] = false;
-        toolbars.value.navigation = true;
-        toolbars.value.fullscreen = true;
-      }
-    } else {
-      subfield.value = true;
-      for (const item of Object.keys(toolbars.value)) {
-        toolbars.value[item] = true;
-      }
-      toolbars.value['html'] = false;
-    }
+    // if (toolbars.value['bold']) {
+    //   subfield.value = false;
+    //   for (const item of Object.keys(toolbars.value)) {
+    //     toolbars.value[item] = false;
+    //     toolbars.value.navigation = true;
+    //     toolbars.value.fullscreen = true;
+    //   }
+    // } else {
+    //   subfield.value = true;
+    //   for (const item of Object.keys(toolbars.value)) {
+    //     toolbars.value[item] = true;
+    //   }
+    //   toolbars.value['html'] = false;
+    // }
   }
 };
 const handleSave = async () => {
   try {
     const route = useRoute();
-    await $fetch(`/api/blog/article/${route.query.id}`, {
-      method: 'patch',
-      headers: {
-        Authorization: `Bearer ${userStore.access_token}`,
-      },
-      body: {
-        title: article.value.title,
-        content: article.value.content,
-        category: article.value.category,
-        tags: typeof article.value.tags === 'string' ? (article.value.tags as string).split(',') : article.value.tags,
-      },
-    });
+    if (route.query.edit) {
+      await $fetch(`/api/blog/article`, {
+        method: 'post',
+        headers: {
+          Authorization: `Bearer ${userStore.access_token}`,
+        },
+        body: {
+          title: article.value.title,
+          content: article.value.content,
+          category: article.value.category,
+          tags: article.value.tags,
+        },
+      });
+    } else {
+      await $fetch(`/api/blog/article/${route.query.id}`, {
+        method: 'patch',
+        headers: {
+          Authorization: `Bearer ${userStore.access_token}`,
+        },
+        body: {
+          title: article.value.title,
+          content: article.value.content,
+          category: article.value.category,
+          tags: article.value.tags,
+        },
+      });
+    }
+
     editing.value = false;
   } catch (error) {
     console.log(error);
@@ -58,51 +73,51 @@ const html = ref('');
 const loading = ref(false);
 const catologTree = ref<any>();
 onMounted(async () => {
-  loading.value = true;
   const route = useRoute();
+  if (route.query.edit) {
+    editing.value = true;
+    return;
+  }
   article.value = await $fetch(`/api/blog/article/${route.query.id}`);
   html.value = await marked.parse(article.value.content);
   //   catologTree.value = getContentDirTree(html.value);
-  console.log(catologTree.value);
-
-  loading.value = false;
 });
-const subfield = ref(false);
-const toolbars = ref<Record<string, boolean>>({
-  bold: false, // 粗体
-  italic: false, // 斜体
-  header: false, // 标题
-  underline: false, // 下划线
-  strikethrough: false, // 中划线
-  mark: false, // 标记
-  superscript: false, // 上角标
-  subscript: false, // 下角标
-  quote: false, // 引用
-  ol: false, // 有序列表
-  ul: false, // 无序列表
-  link: false, // 链接
-  imagelink: false, // 图片链接
-  code: false, // code
-  table: false, // 表格
-  fullscreen: false, // 全屏编辑
-  readmodel: true, // 沉浸式阅读
-  htmlcode: false, // 展示html源码
-  help: false, // 帮助
-  /* 1.3.5 */
-  undo: false, // 上一步
-  redo: false, // 下一步
-  trash: false, // 清空
-  save: false, // 保存（触发events中的save事件）
-  /* 1.4.2 */
-  navigation: true, // 导航目录
-  /* 2.1.8 */
-  alignleft: false, // 左对齐
-  aligncenter: false, // 居中
-  alignright: false, // 右对齐
-  /* 2.2.1 */
-  subfield: false, // 单双栏模式
-  preview: false, // 预览
-});
+// const subfield = ref(false);
+// const toolbars = ref<Record<string, boolean>>({
+//   bold: false, // 粗体
+//   italic: false, // 斜体
+//   header: false, // 标题
+//   underline: false, // 下划线
+//   strikethrough: false, // 中划线
+//   mark: false, // 标记
+//   superscript: false, // 上角标
+//   subscript: false, // 下角标
+//   quote: false, // 引用
+//   ol: false, // 有序列表
+//   ul: false, // 无序列表
+//   link: false, // 链接
+//   imagelink: false, // 图片链接
+//   code: false, // code
+//   table: false, // 表格
+//   fullscreen: false, // 全屏编辑
+//   readmodel: true, // 沉浸式阅读
+//   htmlcode: false, // 展示html源码
+//   help: false, // 帮助
+//   /* 1.3.5 */
+//   undo: false, // 上一步
+//   redo: false, // 下一步
+//   trash: false, // 清空
+//   save: false, // 保存（触发events中的save事件）
+//   /* 1.4.2 */
+//   navigation: true, // 导航目录
+//   /* 2.1.8 */
+//   alignleft: false, // 左对齐
+//   aligncenter: false, // 居中
+//   alignright: false, // 右对齐
+//   /* 2.2.1 */
+//   subfield: false, // 单双栏模式
+//   preview: false, // 预览
+// });
 </script>
 
 <template>
@@ -131,7 +146,7 @@ const toolbars = ref<Record<string, boolean>>({
       <div class="mt-2 flex-1">
         <div v-if="editing" class="mr flex-1">
           <ClientOnly>
-            <mavon-editor class="h-80vh" v-model="article.content" :subfield="subfield" :toolbars="toolbars" />
+            <mavon-editor class="h-80vh" v-model="article.content" />
           </ClientOnly>
         </div>
         <div v-else v-html="html" ref="mdDom" class="max-w-50vw text-justify flex-1"></div>

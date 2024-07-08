@@ -37,6 +37,22 @@ const handleLogin = async () => {
     await userStore.checkAuth();
   } catch (error) {}
 };
+
+const gotoEdit = (key: string) => {
+  switch (key) {
+    case 'addArticle':
+      navigateTo(`/article?edit=1`);
+      break;
+    case 'editC':
+      navigateTo(`/category?edit=1`);
+      break;
+    case 'editT':
+      navigateTo(`/tag?edit=1`);
+      break;
+    default:
+      break;
+  }
+};
 </script>
 
 <template>
@@ -54,9 +70,9 @@ const handleLogin = async () => {
         <input class="ml" type="password" show-password v-model="pwd" @keyup.enter="handleLogin" />
       </div>
       <div v-else-if="isLoginShow && userStore.canEdit" class="flex items-center">
-        <button>Add Article</button>
-        <button>Edit Categories</button>
-        <button>Edit Tags</button>
+        <button @click="gotoEdit('addArticle')">Add Article</button>
+        <button @click="gotoEdit('editC')">Edit Categories</button>
+        <button @click="gotoEdit('editT')">Edit Tags</button>
       </div>
     </header>
     <main class="px flex-1 box-border">
