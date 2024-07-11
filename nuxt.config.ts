@@ -1,5 +1,6 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 
+require('dotenv').config();
 export default defineNuxtConfig({
   devtools: {
     enabled: true,
@@ -13,7 +14,7 @@ export default defineNuxtConfig({
   modules: ['@unocss/nuxt', '@nuxtjs/mdc', '@nuxt/image', '@pinia/nuxt', '@pinia-plugin-persistedstate/nuxt'],
   runtimeConfig: {},
   routeRules: {
-    '/api/blog/**': { proxy: { to: 'http://127.0.0.1:10010/api/blog/**' } },
+    '/api/blog/**': { proxy: { to: `${process.env.API_URL}/api/blog/**` } },
   },
   //   能自动引入
   //   plugins: [{ src: '~/plugins/vue-mavon-editor', mode: 'client' }],
