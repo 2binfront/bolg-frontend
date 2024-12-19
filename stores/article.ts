@@ -23,9 +23,13 @@ export const useArticleStore = defineStore('articleStore', {
   }),
   actions: {
     async getAllArticles() {
-      this.allArticles = await $fetch(`/api/blog/article`);
-      this.categories = await $fetch(`/api/blog/category`);
-      this.tags = await $fetch(`/api/blog/tag`);
+      try {
+        this.allArticles = await $fetch(`/api/blog/article`);
+        this.categories = await $fetch(`/api/blog/category`);
+        this.tags = await $fetch(`/api/blog/tag`);
+      } catch (error) {
+        console.log(error);
+      }
     },
     async getSingleArticles(id: string) {
       this.curArticle = await $fetch(`/api/blog/article/${id}`);
