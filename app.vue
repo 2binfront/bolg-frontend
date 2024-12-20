@@ -12,7 +12,7 @@ onMounted(async () => {
     <Html lang="en">
       <Head>
         <Title>Blog</Title>
-        <Meta name="description" content="Trying to implement a simple blog system in Nuxt3" />
+        <Meta name="description" content="A simple blog system with Nuxt3 and Nest" />
       </Head>
       <Body>
         <NuxtLayout>

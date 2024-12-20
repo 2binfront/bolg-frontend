@@ -18,7 +18,7 @@ const gotoPage = (id: string) => {
   <div class="full">
     <div v-for="(article, index) in curArticles" @click="gotoPage(article._id)" class="cp my article-brief">
       <div>
-        <span class="time-string">{{ `Created on ${formatTime(article.createdAt)}, Updated on ${formatTime(article.updatedAt)}` }}</span>
+        <span class="time-string">{{ `Created on ${formatTime(article.create_date)}, Updated on ${formatTime(article.updatedAt)}` }}</span>
       </div>
       <div class="flex items-end">
         <h2>{{ `${article.title}` }}</h2>

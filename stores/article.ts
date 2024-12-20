@@ -11,7 +11,7 @@ export const useArticleStore = defineStore('articleStore', {
       _id: '',
       articleId: '',
       title: '',
-      createdAt: '',
+      create_date: '',
       updatedAt: '',
       content: '',
       category: '',
@@ -54,6 +54,15 @@ export const useArticleStore = defineStore('articleStore', {
         body: { name: category.name },
       });
     },
+    async delCategory(category: { name: string; id: string }) {
+      await $fetch(`/api/blog/category?id=${category.id}`, {
+        method: 'delete',
+        headers: {
+          Authorization: `Bearer ${useUserStore().access_token}`,
+        },
+        body: { name: category.name },
+      });
+    },
     async addTag(tag: string) {
       await $fetch(`/api/blog/tag`, {
         method: 'post',
@@ -68,6 +77,15 @@ export const useArticleStore = defineStore('articleStore', {
     async editTag(tag: { name: string; id: string }) {
       await $fetch(`/api/blog/tag?id=${tag.id}`, {
         method: 'patch',
+        headers: {
+          Authorization: `Bearer ${useUserStore().access_token}`,
+        },
+        body: { name: tag.name },
+      });
+    },
+    async delTag(tag: { name: string; id: string }) {
+      await $fetch(`/api/blog/tag?id=${tag.id}`, {
+        method: 'delete',
         headers: {
           Authorization: `Bearer ${useUserStore().access_token}`,
         },

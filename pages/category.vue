@@ -21,16 +21,20 @@ const handleAddC = async () => {
 const handleEditC = async (item: any) => {
   await articleStore.editCategory(item);
 };
+const handleDel = async (item: any) => {
+  await articleStore.delCategory(item);
+};
 </script>
 
 <template>
   <div class="flex flex-wrap items-start">
     <div v-for="category in articleStore.categories" :key="category._id" class="flex flex-col ml-8 mt">
       <div class="flex items-end text-28px fw700">
-        <div class="time-string mr-2">{{ formatTime(category.createdAt!) }} </div>
+        <div class="time-string mr-2">{{ formatTime(category.create_date!) }} </div>
         <div v-if="!editing">{{ category.name }}</div>
         <div v-else class="text-20px fw700">
           <input class="text-20px fw700" type="text" v-model="category.name" @keyup.enter="handleEditC(category)" />
+          <button @click="handleDel">delete</button>
         </div>
       </div>
       <div
@@ -38,7 +42,7 @@ const handleEditC = async (item: any) => {
         @click="gotoPage(article._id)"
         class="cp flex items-end article-brief"
       >
-        <div class="font-italic mr-2">{{ `${formatTime(article.createdAt)}: ` }} </div>
+        <div class="font-italic mr-2">{{ `${formatTime(article.create_date)}: ` }} </div>
         <div class="text-20px fw700">{{ `${article.title}` }}</div>
       </div>
     </div>

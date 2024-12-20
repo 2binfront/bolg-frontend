@@ -22,6 +22,9 @@ const handleAddT = async () => {
 const handleEditT = async (tag: any) => {
   await articleStore.editTag(tag);
 };
+const handleDel = async (tag: any) => {
+  await articleStore.delTag(tag);
+};
 </script>
 
 <template>
@@ -32,6 +35,7 @@ const handleEditT = async (tag: any) => {
       </div>
       <div v-else>
         <input class="text-20px fw700" type="text" v-model="tag.name" @keyup.enter="handleEditT(tag)" />
+        <button @click="handleDel">delete</button>
       </div>
     </div>
     <div v-if="editing" class="ml-8 mt"> new Tag: <input type="text" v-model="addT" @keyup.enter="handleAddT" /> </div>

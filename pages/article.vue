@@ -7,7 +7,7 @@ const article = ref<ArticleInfo>({
   _id: '',
   articleId: '',
   title: '',
-  createdAt: '2023-07-21T15:32:35.000Z',
+  create_date: '2023-07-21T15:32:35.000Z',
   updatedAt: '2023-07-21T15:32:35.000Z',
   content: '',
   category: '',
@@ -128,7 +128,7 @@ onMounted(async () => {
           <div @dblclick="handleEdit">
             <div v-if="!editing" class="flex items-end">
               <h1>{{ article.title }} </h1>
-              <span class="ml-2 time-string">{{ `Created at ${formatTime(article.createdAt, 's')}, Updated at ${formatTime(article.updatedAt, 's')}` }}</span>
+              <span class="ml-2 time-string">{{ `Created at ${formatTime(article.create_date, 's')}, Updated at ${formatTime(article.updatedAt, 's')}` }}</span>
             </div>
             <div v-else>
               <input v-model="article.title" class="w-400px text-24px fw700" />
