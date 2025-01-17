@@ -6,7 +6,9 @@ const showSpecificArticle = (tag: Tag) => {
   navigateTo(`/articles?tagId=${tag._id}`);
 };
 
-const addT = ref('');
+const addT = ref({
+  name: '',
+});
 const editing = computed(() => {
   const route = useRoute();
   if (route.query.edit) {
@@ -16,8 +18,8 @@ const editing = computed(() => {
   }
 });
 
-const handleAddT = async () => {
-  await articleStore.addTag(addT.value);
+const handleAddT = async (name: string) => {
+  await articleStore.addTag(name);
 };
 const handleEditT = async (tag: any) => {
   await articleStore.editTag(tag);
@@ -38,7 +40,7 @@ const handleDel = async (tag: any) => {
         <button @click="handleDel">delete</button>
       </div>
     </div>
-    <div v-if="editing" class="ml-8 mt"> new Tag: <input type="text" v-model="addT" @keyup.enter="handleAddT" /> </div>
+    <div v-if="editing" class="ml-8 mt"> new Tag: <input type="text" v-model="addT.name" @keyup.enter="handleAddT(addT.name)" /> </div>
   </div>
 </template>
 

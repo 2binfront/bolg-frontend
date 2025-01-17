@@ -1,22 +1,26 @@
 export interface ArticleInfo {
-  _id: string;
+  id: string;
+  is_deleted?: boolean;
   articleId: string;
   title: string;
   create_date: string;
-  updatedAt: string;
+  write_date: string;
   content: string;
-  category: string;
-  tags: string[] | string;
+  category: any;
+  tags: number[];
+  sequence?: number;
 }
 export interface Category {
-  _id: string;
+  id: string;
   name: string;
   create_date?: string;
-  updatedAt?: string;
+  write_date?: string;
+  sequence?: number;
 }
 export interface Tag {
-  _id: string;
+  id: string;
   name: string;
   create_date?: string;
-  updatedAt?: string;
+  write_date?: string;
+  sequence?: number;
 }

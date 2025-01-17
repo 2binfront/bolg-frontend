@@ -8,11 +8,13 @@ export const useArticleStore = defineStore('articleStore', {
     tags: Tag[];
   } => ({
     curArticle: {
-      _id: '',
+      id: '',
       articleId: '',
       title: '',
+      is_deleted: false,
+      sequence: 0,
       create_date: '',
-      updatedAt: '',
+      write_date: '',
       content: '',
       category: '',
       tags: [],

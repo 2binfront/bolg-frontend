@@ -4,14 +4,14 @@ import type { ArticleInfo } from '~/interface';
 const userStore = useUserStore();
 const articleStore = useArticleStore();
 const article = ref<ArticleInfo>({
-  _id: '',
+  id: '',
   articleId: '',
   title: '',
   create_date: '2023-07-21T15:32:35.000Z',
-  updatedAt: '2023-07-21T15:32:35.000Z',
+  write_date: '2023-07-21T15:32:35.000Z',
   content: '',
   category: '',
-  tags: '',
+  tags: [],
 });
 const editing = ref(false);
 const handleEdit = () => {
@@ -36,6 +36,8 @@ const handleEdit = () => {
 const handleSave = async () => {
   try {
     const route = useRoute();
+    console.log(article.value.tags);
+
     if (route.query.edit) {
       await $fetch(`/api/blog/article`, {
         method: 'post',
@@ -45,8 +47,8 @@ const handleSave = async () => {
         body: {
           title: article.value.title,
           content: article.value.content,
-          category: article.value.category,
-          tags: article.value.tags,
+          category_id: article.value.category,
+          tag_ids: article.value.tags,
         },
       });
     } else {
@@ -58,8 +60,8 @@ const handleSave = async () => {
         body: {
           title: article.value.title,
           content: article.value.content,
-          category: article.value.category,
-          tags: article.value.tags,
+          category_id: article.value.category,
+          tag_ids: article.value.tags,
         },
       });
     }
@@ -128,15 +130,17 @@ onMounted(async () => {
           <div @dblclick="handleEdit">
             <div v-if="!editing" class="flex items-end">
               <h1>{{ article.title }} </h1>
-              <span class="ml-2 time-string">{{ `Created at ${formatTime(article.create_date, 's')}, Updated at ${formatTime(article.updatedAt, 's')}` }}</span>
+              <span class="ml-2 time-string">{{
+                `Created at ${formatTime(article.create_date, 's')}, Updated at ${formatTime(article.write_date, 's')}`
+              }}</span>
             </div>
             <div v-else>
               <input v-model="article.title" class="w-400px text-24px fw700" />
               <select v-model="article.category" class="w-100px text-18px fw700 ml">
-                <option v-for="item in articleStore.categories" :key="item._id" :value="item._id">{{ item.name }}</option>
+                <option v-for="item in articleStore.categories" :key="item.id" :value="item.id">{{ item.name }}</option>
               </select>
               <select v-model="article.tags" class="w-400px text-16px fw700 ml" multiple>
-                <option v-for="item in articleStore.tags" :key="item._id" :value="item._id">{{ item.name }}</option>
+                <option v-for="item in articleStore.tags" :key="item.id" :value="item.id">{{ item.name }}</option>
               </select>
             </div>
           </div>
