@@ -37,9 +37,7 @@ const handleEdit = () => {
 const handleSave = async () => {
   try {
     const route = useRoute();
-    console.log(article.value.tags);
-
-    if (route.query.edit) {
+    if (editing.value) {
       await $fetch(`/api/blog/article`, {
         method: 'post',
         headers: {

@@ -3,7 +3,7 @@ import type { Tag } from '~/interface';
 
 const articleStore = useArticleStore();
 const showSpecificArticle = (tag: Tag) => {
-  navigateTo(`/articles?tagId=${tag._id}`);
+  navigateTo(`/articles?tagId=${tag.id}`);
 };
 
 const addT = ref({
@@ -31,7 +31,7 @@ const handleDel = async (tag: any) => {
 
 <template>
   <div class="flex">
-    <div class="mx font-italic text-20px cp underline article-brief" v-for="tag in articleStore.tags" :key="tag._id" @click="showSpecificArticle(tag)">
+    <div class="mx font-italic text-20px cp underline article-brief" v-for="tag in articleStore.tags" :key="tag.id" @click="showSpecificArticle(tag)">
       <div v-if="!editing">
         {{ tag.name }}
       </div>
