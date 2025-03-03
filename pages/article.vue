@@ -33,6 +33,7 @@ const handleEdit = () => {
     // }
   }
 };
+// 编辑保存
 const handleSave = async () => {
   try {
     const route = useRoute();
@@ -47,8 +48,8 @@ const handleSave = async () => {
         body: {
           title: article.value.title,
           content: article.value.content,
-          category_id: article.value.category,
-          tag_ids: article.value.tags,
+          category_id: article.value.category.id,
+          tag_ids: article.value.tags.map((item) => (item as any).id),
         },
       });
     } else {
