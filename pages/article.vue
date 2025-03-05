@@ -37,7 +37,9 @@ const handleEdit = () => {
 const handleSave = async () => {
   try {
     const route = useRoute();
-    if (editing.value) {
+    console.log(article.value);
+
+    if (route.query.edit) {
       await $fetch(`/api/blog/article`, {
         method: 'post',
         headers: {
@@ -46,8 +48,8 @@ const handleSave = async () => {
         body: {
           title: article.value.title,
           content: article.value.content,
-          category_id: article.value.category.id,
-          tag_ids: article.value.tags.map((item) => (item as any).id),
+          category_id: article.value.category,
+          tag_ids: article.value.tags,
         },
       });
     } else {
@@ -64,8 +66,8 @@ const handleSave = async () => {
         },
       });
     }
-
     editing.value = false;
+    navigateTo(`/articles`);
   } catch (error) {
     console.log(error);
   }
