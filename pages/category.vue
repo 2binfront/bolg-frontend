@@ -24,11 +24,15 @@ const handleEditC = async (item: any) => {
 const handleDel = async (item: any) => {
   await articleStore.delCategory(item);
 };
+
+const showSpecificArticle = (category: any) => {
+  navigateTo(`/articles?categoryId=${category.id}`);
+};
 </script>
 
 <template>
   <div class="flex flex-wrap items-start">
-    <div v-for="category in articleStore.categories" :key="category._id" class="flex flex-col ml-8 mt">
+    <div v-for="category in articleStore.categories" :key="category.id" @click="showSpecificArticle(category)" class="flex flex-col ml-8 mt cp">
       <div class="flex items-end text-28px fw700">
         <div class="time-string mr-2">{{ formatTime(category.create_date!) }} </div>
         <div v-if="!editing">{{ category.name }}</div>
@@ -38,8 +42,8 @@ const handleDel = async (item: any) => {
         </div>
       </div>
       <div
-        v-for="(article, index) in articleStore.allArticles.filter((v) => v.category === category._id)"
-        @click="gotoPage(article._id)"
+        v-for="(article, index) in articleStore.allArticles.filter((v) => v.category === category.id)"
+        @click="gotoPage(article.id)"
         class="cp flex items-end article-brief"
       >
         <div class="font-italic mr-2">{{ `${formatTime(article.create_date)}: ` }} </div>

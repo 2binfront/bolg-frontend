@@ -3,8 +3,12 @@ const articleStore = useArticleStore();
 const route = useRoute();
 
 const curArticles = computed(() => {
+  console.log(articleStore.allArticles);
+
   if (route.query.tagId) {
-    return articleStore.allArticles.filter((v) => v.tags.includes(Number(route.query.tagId)));
+    return articleStore.allArticles.filter((v) => v.tags.map((v) => (v as any).id).includes(Number(route.query.tagId)));
+  } else if (route.query.categoryId) {
+    return articleStore.allArticles.filter((v) => v.category.id == Number(route.query.categoryId));
   } else {
     return articleStore.allArticles;
   }
