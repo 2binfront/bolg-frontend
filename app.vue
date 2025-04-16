@@ -8,9 +8,18 @@ onMounted(async () => {
 </script>
 
 <template>
+    <Html lang="en">
 
-    <NuxtLayout>
-        <NuxtPage />
-    </NuxtLayout>
+    <Head>
+        <Title>Blog</Title>
+        <Meta name="description" content="A simple blog system with Nuxt3 and Nest" />
+    </Head>
 
+    <Body>
+        <NuxtLayout>
+            <NuxtPage />
+        </NuxtLayout>
+    </Body>
+
+    </Html>
 </template>
