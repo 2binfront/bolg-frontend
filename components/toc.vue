@@ -1,11 +1,11 @@
-<template v-if="tocItems.length">
-    <div>
+<template>
+    <div v-if="tocItems.length">
         <!-- 切换按钮 - 始终可见 -->
         <button class="toc-toggle-btn" :class="{ 'button-hidden': !isVisible }" @click="isVisible = !isVisible"
             :title="isVisible ? '隐藏目录' : '显示目录'">
             {{ isVisible ? '×' : '≡' }}
         </button>
-        <div class="toc-container toc-inner" :class="{ 'toc-hidden': !isVisible }">
+        <div v-if="tocItems.length" class="toc-container toc-inner" :class="{ 'toc-hidden': !isVisible }">
             <div class=" toc-header">目录</div>
             <div class="toc-content">
                 <ul class="toc-list">
