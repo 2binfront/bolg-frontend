@@ -4,6 +4,7 @@ export const useUserStore = defineStore('userStore', {
     access_token: '',
     exp: '',
     canEdit: false,
+    isLoginShow: false,
   }),
   persist: process.client && {
     // 仅在客户端使用

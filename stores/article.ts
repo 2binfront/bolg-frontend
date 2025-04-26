@@ -36,6 +36,14 @@ export const useArticleStore = defineStore('articleStore', {
     async getSingleArticles(id: string) {
       this.curArticle = await $fetch(`/api/blog/article/${id}`);
     },
+    async delArticle(id: string) {
+      await $fetch(`/api/blog/article/${id}`, {
+        method: 'delete',
+        headers: {
+          Authorization: `Bearer ${useUserStore().access_token}`,
+        },
+      });
+    },
     async addCategory(category: string) {
       await $fetch(`/api/blog/category`, {
         method: 'post',
