@@ -7,6 +7,9 @@ const userStore = useUserStore();
 const curArticles = ref<ArticleInfo[]>([])
 
 onMounted(async () => {
+    if (!articleStore.allArticles.length) {
+        await articleStore.getAllArticles()
+    }
     curArticles.value = articleStore.allArticles
     if (route.query.tagId) {
         curArticles.value = curArticles.value.filter((v) => v.tags.includes(Number(route.query.tagId)));
