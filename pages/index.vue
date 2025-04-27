@@ -14,7 +14,7 @@ onMounted(async () => {
     if (route.query.tagId) {
 
 
-        curArticles.value = curArticles.value.map(v => v.id).filter((v) => v.tags.includes(Number(route.query.tagId)));
+        curArticles.value = curArticles.value.filter((v) => v.tags.map((v: any) => v.id).includes(Number(route.query.tagId)));
     }
     if (route.query.categoryId) {
         curArticles.value = curArticles.value.filter((v) => v.category.id === Number(route.query.categoryId));
@@ -25,7 +25,7 @@ onMounted(async () => {
 watch(() => route.query, () => {
     curArticles.value = articleStore.allArticles
     if (route.query.tagId) {
-        curArticles.value = curArticles.value.map(v => v.id).filter((v) => v.tags.includes(Number(route.query.tagId)));
+        curArticles.value = curArticles.value.filter((v) => v.tags.map((v: any) => v.id).includes(Number(route.query.tagId)));
     }
     if (route.query.categoryId) {
         curArticles.value = curArticles.value.filter((v) => v.category.id === Number(route.query.categoryId));
