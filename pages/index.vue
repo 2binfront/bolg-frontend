@@ -4,7 +4,7 @@ import type { ArticleInfo } from '~/interface';
 const articleStore = useArticleStore();
 const route = useRoute();
 const userStore = useUserStore();
-const curArticles = ref<ArticleInfo[]>([])
+const curArticles = ref<any[]>([])
 
 onMounted(async () => {
     if (!articleStore.allArticles.length) {
@@ -12,7 +12,9 @@ onMounted(async () => {
     }
     curArticles.value = articleStore.allArticles
     if (route.query.tagId) {
-        curArticles.value = curArticles.value.filter((v) => v.tags.includes(Number(route.query.tagId)));
+
+
+        curArticles.value = curArticles.value.map(v => v.id).filter((v) => v.tags.includes(Number(route.query.tagId)));
     }
     if (route.query.categoryId) {
         curArticles.value = curArticles.value.filter((v) => v.category.id === Number(route.query.categoryId));
@@ -23,7 +25,7 @@ onMounted(async () => {
 watch(() => route.query, () => {
     curArticles.value = articleStore.allArticles
     if (route.query.tagId) {
-        curArticles.value = curArticles.value.filter((v) => v.tags.includes(Number(route.query.tagId)));
+        curArticles.value = curArticles.value.map(v => v.id).filter((v) => v.tags.includes(Number(route.query.tagId)));
     }
     if (route.query.categoryId) {
         curArticles.value = curArticles.value.filter((v) => v.category.id === Number(route.query.categoryId));
