@@ -78,7 +78,10 @@ const gotoEdit = (key: string) => {
         <main class="px flex-1 box-border">
             <slot />
         </main>
-        <footer class="blog-footer frc"> 2binfront@2024 </footer>
+        <footer class="blog-footer frc">
+            <div>2binfront@2024</div>
+            <Rss />
+        </footer>
     </div>
 </template>
 
@@ -114,6 +117,4 @@ pre {
         word-wrap: break-word !important;
     }
 }
-
-
 </style>

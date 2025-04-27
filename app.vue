@@ -13,6 +13,8 @@ onMounted(async () => {
     <Head>
         <Title>2binfront</Title>
         <Meta name="description" content="Good luck and have fun." />
+        <link rel="alternate" type="application/rss+xml" title="2binfront - RSS Feed" href="/api/rss.xml" />
+        <link rel="alternate" type="application/atom+xml" title="2binfront - Atom Feed" href="/api/atom.xml" />
     </Head>
 
     <Body>
