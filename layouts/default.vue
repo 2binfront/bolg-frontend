@@ -79,7 +79,7 @@ const gotoEdit = (key: string) => {
             <slot />
         </main>
         <footer class="blog-footer frc">
-            <div>2binfront@2024</div>
+            <div>2binfront@2024-{{ new Date().getFullYear() }}</div>
             <Rss />
         </footer>
     </div>
