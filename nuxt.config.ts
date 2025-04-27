@@ -15,8 +15,8 @@ export default defineNuxtConfig({
   runtimeConfig: {},
   routeRules: {
     '/api/blog/**': { proxy: `${process.env.API_URL}/api/blog/**` },
-    '/api/rss.xml': { proxy: `${process.env.API_URL}/rss.xml` },
-    '/api/atom.xml': { proxy: `${process.env.API_URL}/atom.xml` },
+    '/api/rss.xml': { proxy: `${process.env.API_URL}/api/rss.xml` },
+    '/api/atom.xml': { proxy: `${process.env.API_URL}/api/atom.xml` },
   },
   //   能自动引入
   //   plugins: [{ src: '~/plugins/vue-mavon-editor', mode: 'client' }],
