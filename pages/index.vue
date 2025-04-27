@@ -1,17 +1,35 @@
 <script lang="ts" setup>
+import type { ArticleInfo } from '~/interface';
+
 const articleStore = useArticleStore();
 const route = useRoute();
 const userStore = useUserStore();
+const curArticles = ref<ArticleInfo[]>([])
+
 onMounted(async () => {
-    articleStore.getAllArticles();
-});
-const curArticles = computed(() => {
+    console.log('mounted');
+
+    await articleStore.getAllArticles();
+    curArticles.value = articleStore.allArticles
     if (route.query.tagId) {
-        return articleStore.allArticles.filter((v) => v.tags.includes(Number(route.query.tagId)));
-    } else {
-        return articleStore.allArticles;
+        curArticles.value = curArticles.value.filter((v) => v.tags.includes(Number(route.query.tagId)));
+    }
+    if (route.query.categoryId) {
+        curArticles.value = curArticles.value.filter((v) => v.category.id === Number(route.query.categoryId));
+    }
+
+});
+
+watch(() => route.query, () => {
+    curArticles.value = articleStore.allArticles
+    if (route.query.tagId) {
+        curArticles.value = curArticles.value.filter((v) => v.tags.includes(Number(route.query.tagId)));
+    }
+    if (route.query.categoryId) {
+        curArticles.value = curArticles.value.filter((v) => v.category.id === Number(route.query.categoryId));
     }
 });
+
 const gotoPage = (id: string) => {
     navigateTo(`/article?id=${id}`);
 };
