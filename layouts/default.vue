@@ -53,10 +53,13 @@ const gotoEdit = (key: string) => {
             break;
     }
 };
+
+
 </script>
 
 <template>
-    <div class="f-col h-100vh relative">
+    <div class="f-col h-100vh relative
+    ">
         <header class="blog-header px pt-4 pb-2 frb" @click="checkUser">
             <div class="flex">
                 <NuxtLink to="/" class="text-26px mr my-2">2binfront's blog</NuxtLink>
@@ -75,7 +78,7 @@ const gotoEdit = (key: string) => {
                 <button @click="gotoEdit('editT')">Edit Tags</button>
             </div>
         </header>
-        <main class="px flex-1 box-border">
+        <main class="px flex-1 box-border ">
             <slot />
         </main>
         <footer class="blog-footer frc">

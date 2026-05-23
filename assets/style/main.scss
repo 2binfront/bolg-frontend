@@ -45,26 +45,26 @@ ol {
   //   margin-left: 20px;
   margin: 6px 0 6px 20px;
   p {
-    margin: 0;
+    margin: 0.5rem 0;
   }
 }
 
 ul {
   margin: 6px 0 6px 20px;
   p {
-    margin: 0;
+    margin: 0.5rem 0;
   }
 }
 
 pre {
   background-color: #f3f3f3;
   padding: 8px;
-  margin: 6px 0;
+  margin: 0.5rem 0;
 }
 
 table {
   border: 1px solid #ccc;
-
+  margin: 0.5rem 0;
   tr {
     td {
       border: 1px solid #ccc;
@@ -80,7 +80,6 @@ table {
   //   max-height: 100%;
   //   height: 100%;
 }
-
 
 // 引用自typora rainbow theme
 
@@ -105,26 +104,23 @@ fonts initalization
 // 	margin: 8mm 0mm;
 // }
 
-
 /*
 root variables including colors, font-familys and a shadow style
 */
 :root {
-	--h-border-color: rgb(255, 191, 191);
-	--h-bg-color: rgb(255, 232, 232);
-	--table-border-color: rgb(255, 235, 211);
-	--th-bg-color: rgb(255, 243, 228);
-	--tr-bg-color: rgb(255, 249, 242);
-	--tr-hover-bg-color: rgb(254, 255, 230);
-	--code-bg-color: rgb(247, 247, 247);
-	--del-color: rgb(151, 151, 151);
-	--selection-bg-color: rgb(235, 227, 255);
-	--block-shadow: 0.15rem 0.15rem 0.5rem rgb(150, 150, 150);
-	// --sans-serif-font: "Noto Sans SC Medium", "Noto Sans SC", sans-serif;
-	// --monospace-font: Cambria, "Source Code Pro Regular", "Source Code Pro", monospace;
+  --h-border-color: rgb(255, 191, 191);
+  --h-bg-color: rgb(255, 232, 232);
+  --table-border-color: rgb(255, 235, 211);
+  --th-bg-color: rgb(255, 243, 228);
+  --tr-bg-color: rgb(255, 249, 242);
+  --tr-hover-bg-color: rgb(254, 255, 230);
+  --code-bg-color: rgb(247, 247, 247);
+  --del-color: rgb(151, 151, 151);
+  --selection-bg-color: rgb(235, 227, 255);
+  --block-shadow: 0.15rem 0.15rem 0.5rem rgb(150, 150, 150);
+  // --sans-serif-font: "Noto Sans SC Medium", "Noto Sans SC", sans-serif;
+  // --monospace-font: Cambria, "Source Code Pro Regular", "Source Code Pro", monospace;
 }
-
-
 
 //   {
 // 	font-family: var(--sans-serif-font);
@@ -167,9 +163,9 @@ headers settings
 // 	border-radius: 0.4rem;
 // }
 
-  h3 {
-	font-size: 1.6rem;
-	text-decoration: underline double var(--h-border-color) 0.15rem;
+h3 {
+  font-size: 1.6rem;
+  text-decoration: underline double var(--h-border-color) 0.15rem;
 }
 
 //   h4 {
@@ -179,29 +175,32 @@ headers settings
 /*
 tables settings
 */
-//   table {
-// 	border-collapse: collapse;
-// 	border: 0.25rem solid var(--table-border-color);
+table {
+  display: block;
+  max-width: fit-content;
+  //   border-collapse: collapse;
+  overflow: auto;
+  //   border: 0.25rem solid var(--table-border-color);
+}
+
+table th {
+  //   background-color: var(--th-bg-color);
+}
+
+table th,
+td {
+  text-align: center;
+  //   border: 0.13rem dashed var(--table-border-color);
+  //   padding: 0.5rem;
+}
+
+// table tr:nth-child(even) {
+//   background-color: var(--tr-bg-color);
 // }
 
-//   table th {
-// 	background-color: var(--th-bg-color);
-// }
-
-//   table th,
-// td {
-// 	text-align: center;
-// 	border: 0.13rem dashed var(--table-border-color);
-// 	padding: 0.5rem;
-// }
-
-//   table tr:nth-child(even) {
-// 	background-color: var(--tr-bg-color);
-// }
-
-//   table tr:hover {
-// 	background-color: var(--tr-hover-bg-color);
-// }
+table tr:hover {
+  //   background-color: var(--tr-hover-bg-color);
+}
 
 /*
 checkboxes settings
@@ -246,17 +245,18 @@ checkboxes settings
 blockquotes settings
 */
 blockquote {
-	color: rgb(102, 102, 102);
-	border-left: 0.25rem solid rgb(169, 202, 255);
-	padding: 0.5rem 1rem 0.6rem 1rem;
+  color: rgb(102, 102, 102);
+  border-left: 0.25rem solid rgb(169, 202, 255);
+  padding: 0.5rem 1rem 0.6rem 1rem;
+  margin: 0.5rem 0;
 }
 
 blockquote::before {
-	display: block;
-	height: 2rem;
-	width: 1.5rem;
-	content: "🌈";
-	font-size: 1.2rem;
+  display: block;
+  height: 2rem;
+  width: 1.5rem;
+  content: '🌈';
+  font-size: 1.2rem;
 }
 
 /*
@@ -338,8 +338,8 @@ code blocks settings
 /*
 formulas settings
 */
-  mjx-container {
-	font-size: 1.1rem;
+mjx-container {
+  font-size: 1.1rem;
 }
 
 /*
