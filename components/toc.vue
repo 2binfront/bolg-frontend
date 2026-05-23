@@ -40,6 +40,11 @@ export default {
         offsetTop: {
             type: Number,
             default: 80
+        },
+        // 是否为移动端
+        isMobile: {
+            type: Boolean,
+            default: false
         }
     },
     data() {
@@ -58,7 +63,14 @@ export default {
             this.setupScrollSpy()
 
             window.addEventListener('scroll', this.handleScroll)
+
         })
+        setTimeout(() => {
+            if (this.isMobile === true) {
+                this.isVisible = false
+            }
+        }, 1000);
+
     },
     beforeDestroy() {
         window.removeEventListener('scroll', this.handleScroll)
@@ -216,7 +228,7 @@ export default {
 }
 
 .toc-hidden {
-    width: 0;
+    /*  width: 0;*/
     margin-left: 60px;
     opacity: 0;
     visibility: hidden;

@@ -74,6 +74,14 @@ const handleSave = async () => {
 const html = ref('');
 const loading = ref(false);
 const catologTree = ref<any>();
+const isMobile = ref(false)
+
+const checkMobile = () => {
+  isMobile.value = window.innerWidth <= 768
+}
+
+
+
 onMounted(async () => {
     const route = useRoute();
     if (route.query.edit) {
@@ -82,6 +90,9 @@ onMounted(async () => {
     }
     article.value = await $fetch(`/api/blog/article/${route.query.id}`);
     html.value = await marked.parse(article.value.content);
+      checkMobile()
+  window.addEventListener('resize', checkMobile)
+
     // catologTree.value = getContentDirTree(html.value);
 });
 // const subfield = ref(false);
@@ -152,8 +163,11 @@ onMounted(async () => {
             </div>
             <div class="mt-2 flex-1  article-content  w-full">
                 <div v-if="!editing" relative w-full>
-                    <Toc :content-html="html" :offsetTop="0" />
-                    <div v-html="html" ref="mdDom" class="max-w-50vw text-justify flex-1"></div>
+                    <Toc :content-html="html" :offsetTop="0" :isMobile="isMobile" />
+                    <div v-html="html" ref="mdDom"   :class="[
+    'text-justify flex-1',
+    !isMobile && 'max-w-50vw'
+  ]"></div>
                 </div>
                 <div v-else="editing" class="mr flex-1">
                     <ClientOnly>
