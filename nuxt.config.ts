@@ -1,6 +1,8 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 
 require('dotenv').config();
+const apiUrl = (process.env.API_URL || 'http://127.0.0.1:3001').replace(/\/$/, '');
+
 export default defineNuxtConfig({
   devtools: {
     enabled: true,
@@ -14,9 +16,9 @@ export default defineNuxtConfig({
   modules: ['@unocss/nuxt', '@nuxtjs/mdc', '@nuxt/image', '@pinia/nuxt', '@pinia-plugin-persistedstate/nuxt'],
   runtimeConfig: {},
   routeRules: {
-    '/api/blog/**': { proxy: `${process.env.API_URL}/api/blog/**` },
-    '/api/rss.xml': { proxy: `${process.env.API_URL}/api/rss.xml` },
-    '/api/atom.xml': { proxy: `${process.env.API_URL}/api/atom.xml` },
+    '/api/blog/**': { proxy: `${apiUrl}/api/blog/**` },
+    '/api/rss.xml': { proxy: `${apiUrl}/api/rss.xml` },
+    '/api/atom.xml': { proxy: `${apiUrl}/api/atom.xml` },
   },
   //   能自动引入
   //   plugins: [{ src: '~/plugins/vue-mavon-editor', mode: 'client' }],

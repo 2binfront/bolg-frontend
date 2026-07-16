@@ -15,8 +15,8 @@ RUN npm install ipx
 # 复制项目文件
 COPY . .
 
-ARG API_URL
-ENV API_URL ${API_URL}
+ARG API_URL=http://127.0.0.1:3001
+ENV API_URL=${API_URL}
 
 # 编译 TypeScript 代码
 RUN npm run build
