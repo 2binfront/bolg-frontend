@@ -3,7 +3,7 @@ const userStore = useUserStore();
 const articleStore = useArticleStore();
 onMounted(async () => {
     await userStore.checkAuth();
-    await articleStore.getAllArticles();
+    await articleStore.getReferenceData();
 });
 </script>
 

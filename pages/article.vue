@@ -14,6 +14,8 @@ const article = ref<ArticleInfo>({
     tags: [],
 });
 const editing = ref(false);
+const saving = ref(false);
+const saveError = ref('');
 const handleEdit = () => {
     if (userStore.canEdit) {
         editing.value = !editing.value;
@@ -35,8 +37,32 @@ const handleEdit = () => {
 };
 // 编辑保存
 const handleSave = async () => {
+    if (saving.value) {
+        return;
+    }
+
+    const categoryId = Number(
+        typeof article.value.category === 'object'
+            ? article.value.category.id
+            : article.value.category,
+    );
+    const tagIds = article.value.tags.map((tag) => Number(typeof tag === 'object' ? tag.id : tag));
+
+    if (!article.value.title.trim() || !article.value.content.trim() || !Number.isInteger(categoryId)) {
+        saveError.value = '请填写标题、正文并选择分类。';
+        return;
+    }
+
+    saving.value = true;
+    saveError.value = '';
     try {
         const route = useRoute();
+        const body = {
+            title: article.value.title.trim(),
+            content: article.value.content,
+            category_id: categoryId,
+            tag_ids: tagIds,
+        };
 
         if (route.query.edit) {
             await $fetch(`/api/blog/article`, {
@@ -44,12 +70,7 @@ const handleSave = async () => {
                 headers: {
                     Authorization: `Bearer ${userStore.access_token}`,
                 },
-                body: {
-                    title: article.value.title,
-                    content: article.value.content,
-                    category_id: article.value.category,
-                    tag_ids: article.value.tags,
-                },
+                body,
             });
         } else {
             await $fetch(`/api/blog/article/${route.query.id}`, {
@@ -57,18 +78,16 @@ const handleSave = async () => {
                 headers: {
                     Authorization: `Bearer ${userStore.access_token}`,
                 },
-                body: {
-                    title: article.value.title,
-                    content: article.value.content,
-                    category_id: article.value.category,
-                    tag_ids: article.value.tags,
-                },
+                body,
             });
         }
         editing.value = false;
-        navigateTo(`/`);
+        await navigateTo(`/`);
     } catch (error) {
-        console.log(error);
+        console.error(error);
+        saveError.value = '保存失败，请检查登录状态和文章内容后重试。';
+    } finally {
+        saving.value = false;
     }
 };
 const html = ref('');
@@ -88,7 +107,12 @@ onMounted(async () => {
         editing.value = true;
         return;
     }
-    article.value = await $fetch(`/api/blog/article/${route.query.id}`);
+    const response = await $fetch<ArticleInfo>(`/api/blog/article/${route.query.id}`);
+    article.value = {
+        ...response,
+        category: typeof response.category === 'object' ? response.category.id : response.category,
+        tags: response.tags.map((tag) => typeof tag === 'object' ? tag.id : tag),
+    };
     html.value = await marked.parse(article.value.content);
     checkMobile()
     window.addEventListener('resize', checkMobile)
@@ -159,8 +183,11 @@ onMounted(async () => {
                         </div>
                     </div>
                 </div>
-                <button v-if="editing" class="mr" @click="handleSave">Save</button>
+                <button v-if="editing" class="mr" :disabled="saving" @click="handleSave">
+                    {{ saving ? 'Saving...' : 'Save' }}
+                </button>
             </div>
+            <div v-if="saveError" class="save-error">{{ saveError }}</div>
             <div class="mt-2 flex-1  article-content  w-full">
                 <div v-if="!editing" relative w-full>
                     <Toc :content-html="html" :offsetTop="0" :isMobile="isMobile" />
@@ -184,6 +211,11 @@ onMounted(async () => {
     flex: 1;
     padding: 20px;
     box-sizing: border-box;
+}
+
+.save-error {
+    margin-top: 0.5rem;
+    color: #c23a3a;
 }
 
 

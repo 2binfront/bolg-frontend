@@ -1,4 +1,4 @@
-import type { ArticleInfo, Category, Tag } from '~/interface';
+import type { ArticleInfo, ArticleQuery, Category, PaginatedResponse, Tag } from '~/interface';
 
 export const useArticleStore = defineStore('articleStore', {
   state: (): {
@@ -6,6 +6,7 @@ export const useArticleStore = defineStore('articleStore', {
     allArticles: ArticleInfo[];
     categories: Category[];
     tags: Tag[];
+    pagination: Omit<PaginatedResponse<ArticleInfo>, 'items'>;
   } => ({
     curArticle: {
       id: '',
@@ -22,11 +23,33 @@ export const useArticleStore = defineStore('articleStore', {
     allArticles: [],
     categories: [],
     tags: [],
+    pagination: {
+      total: 0,
+      page: 1,
+      pageSize: 10,
+      totalPages: 0,
+    },
   }),
   actions: {
-    async getAllArticles() {
+    async getArticles(query: ArticleQuery = {}) {
       try {
-        this.allArticles = await $fetch(`/api/blog/article`);
+        const response = await $fetch<PaginatedResponse<ArticleInfo>>(`/api/blog/article`, {
+          query,
+        });
+        this.allArticles = response.items;
+        this.pagination = {
+          total: response.total,
+          page: response.page,
+          pageSize: response.pageSize,
+          totalPages: response.totalPages,
+        };
+      } catch (error) {
+        console.log(error);
+        throw error;
+      }
+    },
+    async getReferenceData() {
+      try {
         this.categories = await $fetch(`/api/blog/category`);
         this.tags = await $fetch(`/api/blog/tag`);
       } catch (error) {
