@@ -16,6 +16,18 @@ const article = ref<ArticleInfo>({
 const editing = ref(false);
 const saving = ref(false);
 const saveError = ref('');
+const imageUploading = ref(false);
+const editorRef = ref<any>(null);
+const previewImage = ref('');
+const handleContentClick = (event: MouseEvent) => {
+    const target = event.target as HTMLElement;
+    if (target instanceof HTMLImageElement && target.src) {
+        previewImage.value = target.src;
+    }
+};
+const closeImagePreview = () => {
+    previewImage.value = '';
+};
 const handleEdit = () => {
     if (userStore.canEdit) {
         editing.value = !editing.value;
@@ -85,9 +97,34 @@ const handleSave = async () => {
         await navigateTo(`/`);
     } catch (error) {
         console.error(error);
+        const responseMessage = (error as any)?.data?.message;
+        if (typeof responseMessage === 'string') saveError.value = responseMessage;
         saveError.value = '保存失败，请检查登录状态和文章内容后重试。';
     } finally {
         saving.value = false;
+    }
+};
+const handleEditorImageAdd = async (position: number, file: File) => {
+    if (!['image/jpeg', 'image/png', 'image/webp', 'image/gif'].includes(file.type) || file.size > 10 * 1024 * 1024) {
+        saveError.value = '仅支持 JPG、PNG、WebP、GIF，且图片不能超过 10 MB。';
+        return;
+    }
+    imageUploading.value = true;
+    saveError.value = '';
+    try {
+        const formData = new FormData();
+        formData.append('file', file, file.name);
+        const result = await $fetch<{ publicUrl: string }>('/api/blog/article/upload', {
+            method: 'post',
+            headers: { Authorization: `Bearer ${userStore.access_token}` },
+            body: formData,
+        });
+        editorRef.value?.$img2Url(position, result.publicUrl);
+    } catch (error) {
+        console.error(error);
+        saveError.value = '图片上传失败，请稍后重试。';
+    } finally {
+        imageUploading.value = false;
     }
 };
 const html = ref('');
@@ -113,12 +150,26 @@ onMounted(async () => {
         category: typeof response.category === 'object' ? response.category.id : response.category,
         tags: response.tags.map((tag) => typeof tag === 'object' ? tag.id : tag),
     };
-    html.value = await marked.parse(article.value.content);
+    const renderedHtml = await marked.parse(article.value.content);
+    html.value = renderedHtml.replace(/<img\b([^>]*)>/gi, (_match, attributes) => {
+        const existing = String(attributes);
+        const loading = /\bloading\s*=/.test(existing) ? '' : ' loading="lazy"';
+        const decoding = /\bdecoding\s*=/.test(existing) ? '' : ' decoding="async"';
+        const priority = /\bfetchpriority\s*=/.test(existing) ? '' : ' fetchpriority="low"';
+        return `<span class="article-image-frame"><span class="article-image-loading">加载中...</span><img${loading}${decoding}${priority}${existing}></span>`;
+    });
     checkMobile()
     window.addEventListener('resize', checkMobile)
 
     // catologTree.value = getContentDirTree(html.value);
 });
+
+const handleContentImageLoad = (event: Event) => {
+    const image = event.target;
+    if (image instanceof HTMLImageElement) {
+        image.closest('.article-image-frame')?.classList.add('is-loaded');
+    }
+};
 // const subfield = ref(false);
 // const toolbars = ref<Record<string, boolean>>({
 //   bold: false, // 粗体
@@ -168,7 +219,7 @@ onMounted(async () => {
                             <span class="ml-2 time-string">{{
                                 `Created at ${formatTime(article.create_date, 's')}, Updated at
                                 ${formatTime(article.write_date, 's')}`
-                            }}</span>
+                                }}</span>
                         </div>
                         <div v-else>
                             <input v-model="article.title" class="w-400px text-24px fw700" />
@@ -191,17 +242,24 @@ onMounted(async () => {
             <div class="mt-2 flex-1  article-content  w-full">
                 <div v-if="!editing" relative w-full>
                     <Toc :content-html="html" :offsetTop="0" :isMobile="isMobile" />
-                    <div v-html="html" ref="mdDom" :class="[
-                        'text-justify flex-1',
-                        'lg:max-w-62vw',
-                    ]"></div>
+                    <div v-html="html" ref="mdDom" @click="handleContentClick" @load.capture="handleContentImageLoad"
+                        :class="[
+                            'text-justify flex-1',
+                            'lg:max-w-62vw',
+                        ]"></div>
                 </div>
                 <div v-else="editing" class="mr flex-1">
                     <ClientOnly>
-                        <mavon-editor class="h-80vh" v-model="article.content" />
+                        <div v-if="imageUploading" class="image-upload-status">正在上传图片...</div>
+                        <mavon-editor ref="editorRef" class="h-80vh" v-model="article.content"
+                            @imgAdd="handleEditorImageAdd" />
                     </ClientOnly>
                 </div>
             </div>
+        </div>
+        <div v-if="previewImage" class="image-preview" role="dialog" aria-modal="true" @click.self="closeImagePreview">
+            <button type="button" class="image-preview-close" aria-label="关闭图片预览" @click="closeImagePreview">×</button>
+            <img :src="previewImage" alt="图片预览" @click.stop />
         </div>
     </div>
 </template>
@@ -211,11 +269,95 @@ onMounted(async () => {
     flex: 1;
     padding: 20px;
     box-sizing: border-box;
+    font-family: Georgia, "Times New Roman", "Noto Serif SC", serif;
+}
+
+h1 {
+    font-family: Georgia, "Times New Roman", "Noto Serif SC", serif;
 }
 
 .save-error {
     margin-top: 0.5rem;
     color: #c23a3a;
+}
+
+.image-upload-status {
+    margin-bottom: 0.5rem;
+}
+
+.article-content :deep(.article-image-frame) {
+    display: block;
+    position: relative;
+    width: fit-content;
+    max-width: min(100%, 760px);
+    max-height: 440px;
+    margin: 1.25rem auto;
+    overflow: hidden;
+    // border-radius: 8px;
+    background: #f3f3f3;
+}
+
+.article-content :deep(img) {
+    display: block;
+    width: auto;
+    max-width: 100%;
+    max-height: 440px;
+    object-fit: contain;
+    cursor: zoom-in;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+
+.article-content :deep(.article-image-frame.is-loaded img) {
+    opacity: 1;
+}
+
+.article-content :deep(.article-image-loading) {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #777;
+    font-size: 0.9rem;
+    pointer-events: none;
+}
+
+.article-content :deep(.article-image-frame.is-loaded .article-image-loading) {
+    display: none;
+}
+
+.image-preview {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    background: rgba(0, 0, 0, 0.82);
+    cursor: zoom-out;
+}
+
+.image-preview img {
+    max-width: 92vw;
+    max-height: 88vh;
+    object-fit: contain;
+    // border-radius: 6px;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+    cursor: default;
+}
+
+.image-preview-close {
+    position: absolute;
+    top: 1rem;
+    right: 1.25rem;
+    color: #fff;
+    font-size: 2rem;
+    line-height: 1;
+    background: transparent;
+    border: 0;
+    cursor: pointer;
 }
 
 

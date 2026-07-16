@@ -93,7 +93,7 @@ const handleDelete = async (id: string) => {
                 <span class="time-string">{{ `Created on ${formatTime(article.create_date)}, Updated on
                     ${formatTime(article.write_date)}` }}</span>
             </div>
-            <div class="flex items-end">
+            <div class="flex items-end article-title">
                 <h2>{{ article.title }}</h2>
                 <div ml>{{ article.category?.name }}</div>
                 <button v-if="userStore.canEdit && userStore.isLoginShow"
@@ -103,9 +103,8 @@ const handleDelete = async (id: string) => {
 
         <nav v-if="articleStore.pagination.totalPages > 1" class="pagination" aria-label="文章分页">
             <button type="button" :disabled="currentPage === 1" @click="changePage(currentPage - 1)">上一页</button>
-            <button v-for="page in visiblePages" :key="page" type="button"
-                :class="{ active: page === currentPage }" :aria-current="page === currentPage ? 'page' : undefined"
-                @click="changePage(page)">
+            <button v-for="page in visiblePages" :key="page" type="button" :class="{ active: page === currentPage }"
+                :aria-current="page === currentPage ? 'page' : undefined" @click="changePage(page)">
                 {{ page }}
             </button>
             <button type="button" :disabled="currentPage === articleStore.pagination.totalPages"
@@ -129,6 +128,16 @@ const handleDelete = async (id: string) => {
     text-align: center;
 }
 
+.article-brief {
+    font-family: Georgia, "Times New Roman", "Noto Serif SC", serif;
+    transition: color 0.2s ease;
+}
+
+.article-brief .article-title:hover {
+    color: #551a8b;
+    text-shadow: 0 2px 3px rgba(0, 0, 0, 0.45);
+}
+
 .pagination {
     display: flex;
     align-items: center;
@@ -138,18 +147,26 @@ const handleDelete = async (id: string) => {
     margin: 2rem 0;
 
     button {
-        min-width: 2.25rem;
-        padding: 0.35rem 0.65rem;
-        border: 1px solid #aaa;
-        border-radius: 4px;
+        min-width: 2rem;
+        padding: 0.35rem 0.55rem;
+        border: 0;
+        border-radius: 999px;
         background: transparent;
         cursor: pointer;
+        color: inherit;
+        font-family: Georgia, "Times New Roman", "Noto Serif SC", serif;
+        transition: color 0.2s ease;
+    }
+
+    button:not(:disabled):hover {
+        // background: transparent;
+        color: #551a8b;
+        font-weight: bold;
     }
 
     button.active {
-        color: #fff;
-        background: #222;
-        border-color: #222;
+        color: #551a8b;
+        // background: #222;
     }
 
     button:disabled {
@@ -165,7 +182,7 @@ const handleDelete = async (id: string) => {
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    background-color: rgba(0, 0, 0, 0.5);
+    // background-color: rgba(0, 0, 0, 0.5);
 
     &>div:first-child {
         color: #fff;
