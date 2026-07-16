@@ -153,10 +153,11 @@ onMounted(async () => {
     const renderedHtml = await marked.parse(article.value.content);
     html.value = renderedHtml.replace(/<img\b([^>]*)>/gi, (_match, attributes) => {
         const existing = String(attributes);
-        const loading = /\bloading\s*=/.test(existing) ? '' : ' loading="lazy"';
-        const decoding = /\bdecoding\s*=/.test(existing) ? '' : ' decoding="async"';
-        const priority = /\bfetchpriority\s*=/.test(existing) ? '' : ' fetchpriority="low"';
-        return `<span class="article-image-frame"><span class="article-image-loading">加载中...</span><img${loading}${decoding}${priority}${existing}></span>`;
+        const normalized = existing.replace(/(\bsrc=["'])(?!https?:\/\/|data:|\/)/i, '$1https://');
+        const loading = /\bloading\s*=/.test(normalized) ? '' : ' loading="lazy"';
+        const decoding = /\bdecoding\s*=/.test(normalized) ? '' : ' decoding="async"';
+        const priority = /\bfetchpriority\s*=/.test(normalized) ? '' : ' fetchpriority="low"';
+        return `<span class="article-image-frame"><span class="article-image-loading">加载中...</span><img${loading}${decoding}${priority}${normalized}></span>`;
     });
     checkMobile()
     window.addEventListener('resize', checkMobile)
