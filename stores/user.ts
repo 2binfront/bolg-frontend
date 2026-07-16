@@ -7,8 +7,7 @@ export const useUserStore = defineStore('userStore', {
     isLoginShow: false,
   }),
   persist: process.client && {
-    // 仅在客户端使用
-    storage: localStorage, // localStorage 本地存储，可替换sessionStorage
+    storage: sessionStorage,
   },
   actions: {
     setUser(user: any) {
@@ -27,9 +26,13 @@ export const useUserStore = defineStore('userStore', {
 
         if (res.exp && res.exp > new Date().getTime() / 1000) {
           this.canEdit = true;
+        } else {
+          this.canEdit = false;
         }
       } catch (error) {
         this.canEdit = false;
+        this.access_token = '';
+        this.exp = '';
       }
     },
   },
