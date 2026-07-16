@@ -76,17 +76,18 @@ const handleSave = async () => {
             tag_ids: tagIds,
         };
 
-        if (route.query.edit) {
-            await $fetch(`/api/blog/article`, {
-                method: 'post',
+        const articleId = Number(route.query.id);
+        if (Number.isInteger(articleId) && articleId > 0) {
+            await $fetch(`/api/blog/article/${articleId}`, {
+                method: 'patch',
                 headers: {
                     Authorization: `Bearer ${userStore.access_token}`,
                 },
                 body,
             });
         } else {
-            await $fetch(`/api/blog/article/${route.query.id}`, {
-                method: 'patch',
+            await $fetch(`/api/blog/article`, {
+                method: 'post',
                 headers: {
                     Authorization: `Bearer ${userStore.access_token}`,
                 },
@@ -220,7 +221,7 @@ const handleContentImageLoad = (event: Event) => {
                             <span class="ml-2 time-string">{{
                                 `Created at ${formatTime(article.create_date, 's')}, Updated at
                                 ${formatTime(article.write_date, 's')}`
-                                }}</span>
+                            }}</span>
                         </div>
                         <div v-else>
                             <input v-model="article.title" class="w-400px text-24px fw700" />
@@ -305,7 +306,7 @@ h1 {
     max-height: 440px;
     object-fit: contain;
     cursor: zoom-in;
-    opacity: 0;
+    // opacity: 0;
     transition: opacity 0.2s ease;
 }
 
