@@ -10,6 +10,7 @@ const article = ref<ArticleInfo>({
     create_date: '2023-07-21T15:32:35.000Z',
     write_date: '2023-07-21T15:32:35.000Z',
     content: '',
+    content_en: '',
     category: '',
     tags: [],
 });
@@ -17,8 +18,11 @@ const editing = ref(false);
 const saving = ref(false);
 const saveError = ref('');
 const imageUploading = ref(false);
-const editorRef = ref<any>(null);
+const editorRefZh = ref<any>(null);
+const editorRefEn = ref<any>(null);
 const previewImage = ref('');
+const displayLanguage = ref<'zh' | 'en'>('zh');
+const hasEnglishContent = computed(() => Boolean(article.value.content_en?.trim()));
 const handleContentClick = (event: MouseEvent) => {
     const target = event.target as HTMLElement;
     if (target instanceof HTMLImageElement && target.src) {
@@ -72,6 +76,7 @@ const handleSave = async () => {
         const body = {
             title: article.value.title.trim(),
             content: article.value.content,
+            content_en: article.value.content_en?.trim() || null,
             category_id: categoryId,
             tag_ids: tagIds,
         };
@@ -105,7 +110,7 @@ const handleSave = async () => {
         saving.value = false;
     }
 };
-const handleEditorImageAdd = async (position: number, file: File) => {
+const handleEditorImageAdd = async (position: number, file: File, language: 'zh' | 'en') => {
     if (!['image/jpeg', 'image/png', 'image/webp', 'image/gif'].includes(file.type) || file.size > 10 * 1024 * 1024) {
         saveError.value = '仅支持 JPG、PNG、WebP、GIF，且图片不能超过 10 MB。';
         return;
@@ -120,7 +125,7 @@ const handleEditorImageAdd = async (position: number, file: File) => {
             headers: { Authorization: `Bearer ${userStore.access_token}` },
             body: formData,
         });
-        editorRef.value?.$img2Url(position, result.publicUrl);
+        (language === 'zh' ? editorRefZh : editorRefEn).value?.$img2Url(position, result.publicUrl);
     } catch (error) {
         console.error(error);
         saveError.value = '图片上传失败，请稍后重试。';
@@ -129,6 +134,23 @@ const handleEditorImageAdd = async (position: number, file: File) => {
     }
 };
 const html = ref('');
+const renderMarkdown = async (content: string) => {
+    const renderedHtml = await marked.parse(content || '');
+    return renderedHtml.replace(/<img\b([^>]*)>/gi, (_match, attributes) => {
+        const existing = String(attributes);
+        const normalized = existing.replace(/(\bsrc=["'])(?!https?:\/\/|data:|\/)/i, '$1https://');
+        const loading = /\bloading\s*=/.test(normalized) ? '' : ' loading="lazy"';
+        const decoding = /\bdecoding\s*=/.test(normalized) ? '' : ' decoding="async"';
+        const priority = /\bfetchpriority\s*=/.test(normalized) ? '' : ' fetchpriority="low"';
+        return `<span class="article-image-frame"><span class="article-image-loading">Loading...</span><img${loading}${decoding}${priority}${normalized}></span>`;
+    });
+};
+const renderDisplayedContent = async () => {
+    const content = displayLanguage.value === 'en' && hasEnglishContent.value
+        ? article.value.content_en!
+        : article.value.content;
+    html.value = await renderMarkdown(content);
+};
 const loading = ref(false);
 const catologTree = ref<any>();
 const isMobile = ref(false)
@@ -151,6 +173,7 @@ onMounted(async () => {
         category: typeof response.category === 'object' ? response.category.id : response.category,
         tags: response.tags.map((tag) => typeof tag === 'object' ? tag.id : tag),
     };
+    article.value.content_en = response.content_en || '';
     const renderedHtml = await marked.parse(article.value.content);
     html.value = renderedHtml.replace(/<img\b([^>]*)>/gi, (_match, attributes) => {
         const existing = String(attributes);
@@ -165,6 +188,8 @@ onMounted(async () => {
 
     // catologTree.value = getContentDirTree(html.value);
 });
+
+watch(displayLanguage, renderDisplayedContent);
 
 const handleContentImageLoad = (event: Event) => {
     const image = event.target;
@@ -221,7 +246,14 @@ const handleContentImageLoad = (event: Event) => {
                             <span class="ml-2 time-string">{{
                                 `Created at ${formatTime(article.create_date, 's')}, Updated at
                                 ${formatTime(article.write_date, 's')}`
-                            }}</span>
+                                }}</span>
+                            <div class="language-switcher ml-4" role="group" aria-label="Content language">
+                                <button type="button" :class="{ active: displayLanguage === 'zh' }"
+                                    @click="displayLanguage = 'zh'">中文</button>
+                                <button type="button" :disabled="!hasEnglishContent"
+                                    :class="{ active: displayLanguage === 'en' }"
+                                    @click="displayLanguage = 'en'">English</button>
+                            </div>
                         </div>
                         <div v-else>
                             <input v-model="article.title" class="w-400px text-24px fw700" />
@@ -253,8 +285,18 @@ const handleContentImageLoad = (event: Event) => {
                 <div v-else="editing" class="mr flex-1">
                     <ClientOnly>
                         <div v-if="imageUploading" class="image-upload-status">正在上传图片...</div>
-                        <mavon-editor ref="editorRef" class="h-80vh" v-model="article.content"
-                            @imgAdd="handleEditorImageAdd" />
+                        <div class="bilingual-editors">
+                            <div class="editor-pane">
+                                <div class="editor-label">中文正文</div>
+                                <mavon-editor ref="editorRefZh" class="h-80vh" v-model="article.content"
+                                    @imgAdd="(position: number, file: File) => handleEditorImageAdd(position, file, 'zh')" />
+                            </div>
+                            <div class="editor-pane">
+                                <div class="editor-label">English Content</div>
+                                <mavon-editor ref="editorRefEn" class="h-80vh" v-model="article.content_en"
+                                    @imgAdd="(position: number, file: File) => handleEditorImageAdd(position, file, 'en')" />
+                            </div>
+                        </div>
                     </ClientOnly>
                 </div>
             </div>
@@ -272,6 +314,56 @@ const handleContentImageLoad = (event: Event) => {
     padding: 20px;
     box-sizing: border-box;
     font-family: Georgia, "Times New Roman", "Noto Serif SC", serif;
+}
+
+.language-switcher {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    text-decoration: underline;
+
+    button {
+        margin: 0;
+        padding: 0;
+        border: 0;
+        background: transparent;
+        color: var(--muted-color);
+        font: inherit;
+        font-size: 0.95rem;
+        cursor: pointer;
+    }
+
+    button.active {
+        color: var(--text-color);
+        font-weight: 700;
+    }
+
+    button:disabled {
+        cursor: not-allowed;
+        opacity: 0.45;
+    }
+
+    button:not(:disabled):hover {
+        color: var(--link-color);
+    }
+}
+
+.bilingual-editors {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1rem;
+}
+
+.editor-label {
+    margin-bottom: 0.5rem;
+    color: var(--muted-color);
+    font-weight: 700;
+}
+
+@media (max-width: 900px) {
+    .bilingual-editors {
+        grid-template-columns: 1fr;
+    }
 }
 
 h1 {
