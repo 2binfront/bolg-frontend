@@ -5,6 +5,22 @@ let waitTime = 200; // 该时间间隔内点击才算连续点击（单位：ms�
 let lastTime = new Date().getTime(); // 上次点击时间
 let count = 0; // 连续点击次数
 const { isLoginShow } = storeToRefs(userStore);
+const isDark = useState('is-dark', () => false);
+
+const applyTheme = (dark: boolean) => {
+    isDark.value = dark;
+    if (import.meta.client) {
+        document.documentElement.classList.toggle('dark', dark);
+        localStorage.setItem('blog-theme', dark ? 'dark' : 'light');
+    }
+};
+
+onMounted(() => {
+    const savedTheme = localStorage.getItem('blog-theme');
+    applyTheme(savedTheme === 'dark');
+});
+
+const toggleTheme = () => applyTheme(!isDark.value);
 
 const checkUser = () => {
     let currentTime = new Date().getTime();
@@ -69,6 +85,10 @@ const gotoEdit = (key: string) => {
                     <NuxtLink to="/about" ml>About</NuxtLink>
                 </div>
             </div>
+            <button class="theme-toggle" type="button" :aria-label="isDark ? '切换到日间模式' : '切换到夜间模式'"
+                :title="isDark ? '切换到日间模式' : '切换到夜间模式'" @click.stop="toggleTheme">
+                {{ isDark ? '☀' : '☾' }}
+            </button>
             <div v-if="isLoginShow && !userStore.canEdit" class="flex-1 flex items-center">
                 <input class="ml" type="password" show-password v-model="pwd" @keyup.enter="handleLogin" />
             </div>
@@ -102,9 +122,17 @@ const gotoEdit = (key: string) => {
     }
 }
 
+.theme-toggle {
+    margin-left: auto;
+    border: 1px solid var(--border-color);
+    background: transparent;
+    color: var(--text-color);
+    cursor: pointer;
+}
+
 .blog-footer {
     //   background-color: black;
-    color: #000;
+    color: var(--text-color);
     height: 5vh;
     max-height: 200px;
 }

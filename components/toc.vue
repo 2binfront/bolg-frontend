@@ -232,7 +232,7 @@ export default {
     z-index: 100;
     transition: all 0.3s ease;
 
-    background: rgba(255, 255, 255, 0.94);
+    background: color-mix(in srgb, var(--surface-color) 94%, transparent);
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
     backdrop-filter: blur(8px);
     font-family: Georgia, "Times New Roman", "Noto Serif SC", serif;
@@ -255,7 +255,7 @@ export default {
     width: 36px;
     height: 36px;
     border-radius: 50%;
-    background-color: #fff;
+    background-color: var(--surface-color);
     border: 0;
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
     display: flex;
@@ -296,7 +296,7 @@ export default {
     font-size: 16px;
     font-weight: 700;
     margin-bottom: 6px;
-    color: #222;
+    color: var(--text-color);
 }
 
 .toc-header-row {
@@ -336,7 +336,7 @@ export default {
 
 .toc-list li a {
     padding: 6px 8px;
-    color: #666;
+    color: var(--muted-color);
     text-decoration: none;
     display: block;
     word-break: break-word;
@@ -350,7 +350,7 @@ export default {
 }
 
 .toc-active {
-    color: #000 !important;
+    color: var(--text-color) !important;
     font-weight: 800;
 }
 

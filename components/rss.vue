@@ -22,7 +22,7 @@
     align-items: center;
     gap: 0.5rem;
     padding: 0.5rem 1rem;
-    background-color: #fff;
+    background-color: transparent;
     border-radius: 4px;
     color: #ff6600;
     text-decoration: none;

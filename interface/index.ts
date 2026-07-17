@@ -6,6 +6,7 @@ export interface ArticleInfo {
   create_date: string;
   write_date: string;
   content: string;
+  content_en?: string | null;
   category: Category | number | string;
   tags: Array<Tag | number | string>;
   sequence?: number;

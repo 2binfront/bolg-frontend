@@ -3,6 +3,47 @@
   padding: 0;
   font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
 }
+
+:root {
+  color-scheme: light;
+  --page-bg: #fff;
+  --text-color: #000;
+  --muted-color: #777;
+  --border-color: #ccc;
+  --surface-color: #fff;
+  --code-bg-color: #f3f3f3;
+  --link-color: #551a8b;
+}
+
+:root.dark {
+  color-scheme: dark;
+  --page-bg: #171717;
+  --text-color: #e8e6e3;
+  --muted-color: #a8a8a8;
+  --border-color: #4a4a4a;
+  --surface-color: #242424;
+  --code-bg-color: #282828;
+  --link-color: #c39bea;
+}
+
+html,
+body {
+  background-color: var(--page-bg);
+  color: var(--text-color);
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+a {
+  color: var(--link-color);
+}
+
+input,
+textarea,
+select {
+  color: var(--text-color);
+  background-color: var(--surface-color);
+  border-color: var(--border-color);
+}
 .article-brief {
   width: fit-content;
   &:hover {
@@ -57,17 +98,17 @@ ul {
 }
 
 pre {
-  background-color: #f3f3f3;
+  background-color: var(--code-bg-color);
   padding: 8px;
   margin: 0.5rem 0;
 }
 
 table {
-  border: 1px solid #ccc;
+  border: 1px solid var(--border-color);
   margin: 0.5rem 0;
   tr {
     td {
-      border: 1px solid #ccc;
+      border: 1px solid var(--border-color);
       padding: 4px;
     }
   }
@@ -245,7 +286,7 @@ checkboxes settings
 blockquotes settings
 */
 blockquote {
-  color: rgb(102, 102, 102);
+  color: var(--muted-color);
   border-left: 0.25rem solid rgb(169, 202, 255);
   padding: 0.5rem 1rem 0.6rem 1rem;
   margin: 0.5rem 0;

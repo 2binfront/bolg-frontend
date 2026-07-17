@@ -280,7 +280,7 @@ h1 {
 
 .save-error {
     margin-top: 0.5rem;
-    color: #c23a3a;
+    color: var(--error-color, #c23a3a);
 }
 
 .image-upload-status {
@@ -296,7 +296,7 @@ h1 {
     margin: 1.25rem auto;
     overflow: hidden;
     // border-radius: 8px;
-    background: #f3f3f3;
+    background: var(--code-bg-color);
 }
 
 .article-content :deep(img) {
@@ -320,7 +320,7 @@ h1 {
     display: flex;
     align-items: center;
     justify-content: center;
-    color: #777;
+    color: var(--muted-color);
     font-size: 0.9rem;
     pointer-events: none;
 }
