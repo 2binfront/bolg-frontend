@@ -138,26 +138,28 @@ const handleDelete = async (id: string) => {
 </script>
 
 <template>
-    <div class="full">
+    <div class="full  flex flex-col justify-between">
         <div v-if="loading" class="list-message">正在加载文章...</div>
         <div v-else-if="loadError" class="list-message">
             文章加载失败，<button type="button" @click="loadArticles">重试</button>
         </div>
         <div v-else-if="!articleStore.allArticles.length" class="list-message">暂无文章</div>
-
-        <div v-for="article in articleStore.allArticles" :key="article.id" @click="gotoPage(article.id)"
-            class="cp my article-brief">
-            <div>
-                <span class="time-string">{{ `Created on ${formatTime(article.create_date)}, Updated on
-                    ${formatTime(article.write_date)}` }}</span>
-            </div>
-            <div class="flex items-end article-title">
-                <h2>{{ article.title }}</h2>
-                <div ml>{{ article.category?.name }}</div>
-                <button v-if="userStore.canEdit && userStore.isLoginShow"
-                    @click.stop="maskShow = true; chooseArticle = article">删除</button>
+        <div>
+            <div v-for="article in articleStore.allArticles" :key="article.id" @click="gotoPage(article.id)"
+                class="cp my article-brief">
+                <div>
+                    <span class="time-string">{{ `Created on ${formatTime(article.create_date)}, Updated on
+                        ${formatTime(article.write_date)}` }}</span>
+                </div>
+                <div class="flex items-end article-title">
+                    <h2>{{ article.title }}</h2>
+                    <div ml>{{ article.category?.name }}</div>
+                    <button v-if="userStore.canEdit && userStore.isLoginShow"
+                        @click.stop="maskShow = true; chooseArticle = article">删除</button>
+                </div>
             </div>
         </div>
+
 
         <nav v-if="articleStore.pagination.totalPages > 1" class="pagination" aria-label="文章分页">
             <button type="button" :disabled="currentPage === 1" @click="changePage(currentPage - 1)">上一页</button>
@@ -202,7 +204,7 @@ const handleDelete = async (id: string) => {
     justify-content: center;
     flex-wrap: wrap;
     gap: 0.5rem;
-    margin: 2rem 0;
+    margin: 0rem 0;
 
     button {
         min-width: 2rem;
