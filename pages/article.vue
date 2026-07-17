@@ -23,6 +23,8 @@ const editorRefEn = ref<any>(null);
 const previewImage = ref('');
 const displayLanguage = ref<'zh' | 'en'>('zh');
 const hasEnglishContent = computed(() => Boolean(article.value.content_en?.trim()));
+const displayCategory = ref<{ id: string | number; name: string } | null>(null);
+const displayTags = ref<Array<{ id: string | number; name: string }>>([]);
 const handleContentClick = (event: MouseEvent) => {
     const target = event.target as HTMLElement;
     if (target instanceof HTMLImageElement && target.src) {
@@ -168,6 +170,14 @@ onMounted(async () => {
         return;
     }
     const response = await $fetch<ArticleInfo>(`/api/blog/article/${route.query.id}`);
+    displayCategory.value = typeof response.category === 'object'
+        ? { id: response.category.id, name: response.category.name }
+        : articleStore.categories.find((category) => String(category.id) === String(response.category)) || null;
+    displayTags.value = response.tags
+        .map((tag) => typeof tag === 'object'
+            ? { id: tag.id, name: tag.name }
+            : articleStore.tags.find((item) => String(item.id) === String(tag)))
+        .filter((tag): tag is { id: string | number; name: string } => Boolean(tag));
     article.value = {
         ...response,
         category: typeof response.category === 'object' ? response.category.id : response.category,
@@ -241,18 +251,42 @@ const handleContentImageLoad = (event: Event) => {
             <div class="frb">
                 <div class="flex items-end">
                     <div @dblclick="handleEdit">
-                        <div v-if="!editing" class="flex items-end">
-                            <h1>{{ article.title }} </h1>
-                            <span class="ml-2 time-string">{{
-                                `Created at ${formatTime(article.create_date, 's')}, Updated at
-                                ${formatTime(article.write_date, 's')}`
+                        <div v-if="!editing" class="article-title-row">
+                            <h1 class="article-heading">{{ article.title }} </h1>
+                            <div class="article-meta">
+                                <span class="time-string">{{
+                                    `Created at ${formatTime(article.create_date, 's')}, Updated at
+                                    ${formatTime(article.write_date, 's')}`
                                 }}</span>
-                            <div class="language-switcher ml-4" role="group" aria-label="Content language">
-                                <button type="button" :class="{ active: displayLanguage === 'zh' }"
-                                    @click="displayLanguage = 'zh'">中文</button>
-                                <button type="button" :disabled="!hasEnglishContent"
-                                    :class="{ active: displayLanguage === 'en' }"
-                                    @click="displayLanguage = 'en'">English</button>
+                                <div class="language-switcher" role="group" aria-label="Content language">
+                                    <button type="button" :class="{ active: displayLanguage === 'zh' }"
+                                        @click="displayLanguage = 'zh'">中文</button>
+                                    <button type="button" :disabled="!hasEnglishContent"
+                                        :class="{ active: displayLanguage === 'en' }"
+                                        @click="displayLanguage = 'en'">English</button>
+                                </div>
+                            </div>
+                            <div v-if="displayCategory || displayTags.length || hasEnglishContent" class="article-taxonomy">
+                                <span v-if="displayCategory" class="taxonomy-group">
+                                    <span class="taxonomy-label">Category</span>
+                                    <NuxtLink :to="`/?categoryId=${displayCategory.id}`" class="taxonomy-link">
+                                        {{ displayCategory.name }}
+                                    </NuxtLink>
+                                </span>
+                                <span v-if="displayTags.length" class="taxonomy-group">
+                                    <span class="taxonomy-label">Tags</span>
+                                    <NuxtLink v-for="tag in displayTags" :key="tag.id" :to="`/?tagId=${tag.id}`"
+                                        class="taxonomy-link">
+                                        #{{ tag.name }}
+                                    </NuxtLink>
+                                </span>
+                                <div class="language-switcher" role="group" aria-label="Content language">
+                                    <button type="button" :class="{ active: displayLanguage === 'zh' }"
+                                        @click="displayLanguage = 'zh'">中文</button>
+                                    <button type="button" :disabled="!hasEnglishContent"
+                                        :class="{ active: displayLanguage === 'en' }"
+                                        @click="displayLanguage = 'en'">English</button>
+                                </div>
                             </div>
                         </div>
                         <div v-else>
@@ -320,7 +354,6 @@ const handleContentImageLoad = (event: Event) => {
     display: flex;
     align-items: center;
     gap: 0.75rem;
-    text-decoration: underline;
 
     button {
         margin: 0;
@@ -346,6 +379,91 @@ const handleContentImageLoad = (event: Event) => {
     button:not(:disabled):hover {
         color: var(--link-color);
     }
+}
+
+.article-title-row {
+    display: flex;
+    align-items: flex-end;
+    flex-wrap: wrap;
+    gap: 0.25rem 0.75rem;
+    min-width: 0;
+}
+
+.article-heading {
+    flex: 1 1 320px;
+    min-width: 0;
+    overflow-wrap: anywhere;
+}
+
+.article-meta {
+    display: flex;
+    align-items: center;
+    flex: 1 1 260px;
+    flex-wrap: wrap;
+    gap: 0.25rem 0.75rem;
+    min-width: 0;
+}
+
+.article-meta .time-string {
+    min-width: 0;
+    overflow-wrap: anywhere;
+}
+
+.article-meta .language-switcher {
+    display: none;
+}
+
+@media (min-width: 769px) {
+    .article-title-row {
+        flex-wrap: nowrap;
+        gap: 0.75rem;
+    }
+
+    .article-heading,
+    .article-meta {
+        flex: 0 1 auto;
+    }
+
+    .article-meta {
+        margin-left: 0.25rem;
+        gap: 0.25rem 1rem;
+    }
+
+    .article-taxonomy {
+        gap: 0.5rem 1.5rem;
+    }
+}
+
+.article-taxonomy {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.4rem 1.25rem;
+    margin-top: 0.5rem;
+    color: var(--muted-color);
+    font-size: 0.95rem;
+}
+
+.taxonomy-group {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.35rem 0.65rem;
+    min-width: 0;
+}
+
+.taxonomy-label {
+    font-style: italic;
+}
+
+.taxonomy-link {
+    color: var(--link-color);
+    text-decoration: none;
+    overflow-wrap: anywhere;
+}
+
+.taxonomy-link:hover {
+    text-decoration: underline;
 }
 
 .bilingual-editors {

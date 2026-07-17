@@ -5,6 +5,38 @@ const router = useRouter();
 const userStore = useUserStore();
 const loading = ref(false);
 const loadError = ref(false);
+const pageSize = ref(10);
+let resizeTimer: ReturnType<typeof setTimeout> | undefined;
+
+const getResponsivePageSize = () => {
+    if (!import.meta.client) return 10;
+
+    const viewportWidth = Math.max(window.innerWidth, 320);
+    const viewportHeight = Math.max(window.innerHeight, 480);
+
+    // Estimate the list row height continuously: narrower screens wrap titles more often.
+    const titleCharsPerLine = Math.max(14, viewportWidth / 18);
+    const estimatedTitleLines = Math.min(3, Math.max(1, 32 / titleCharsPerLine));
+    const estimatedItemHeight = 52 + estimatedTitleLines * 20;
+
+    // Account for the header, footer, page padding and pagination controls.
+    const reservedHeight = 175 + Math.max(0, (768 - viewportWidth) * 0.08);
+    const visibleItems = Math.ceil((viewportHeight - reservedHeight) / estimatedItemHeight);
+
+    return Math.max(5, Math.min(30, visibleItems));
+};
+
+const updatePageSize = () => {
+    const nextPageSize = getResponsivePageSize();
+    if (nextPageSize !== pageSize.value) {
+        pageSize.value = nextPageSize;
+    }
+};
+
+const handleResize = () => {
+    if (resizeTimer) clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(updatePageSize, 400);
+};
 
 const toPositiveInteger = (value: unknown, fallback: number) => {
     const parsed = Number(value);
@@ -28,7 +60,7 @@ const loadArticles = async () => {
     try {
         await articleStore.getArticles({
             page: currentPage.value,
-            pageSize: 10,
+            pageSize: pageSize.value,
             categoryId: route.query.categoryId ? toPositiveInteger(route.query.categoryId, 0) || undefined : undefined,
             tagId: route.query.tagId ? toPositiveInteger(route.query.tagId, 0) || undefined : undefined,
         });
@@ -56,10 +88,20 @@ const changePage = async (page: number) => {
 };
 
 watch(
-    () => [route.query.page, route.query.categoryId, route.query.tagId],
+    () => [route.query.page, route.query.categoryId, route.query.tagId, pageSize.value],
     loadArticles,
     { immediate: true },
 );
+
+onMounted(() => {
+    updatePageSize();
+    window.addEventListener('resize', handleResize);
+});
+
+onBeforeUnmount(() => {
+    window.removeEventListener('resize', handleResize);
+    if (resizeTimer) clearTimeout(resizeTimer);
+});
 
 const gotoPage = (id: string) => {
     navigateTo(`/article?id=${id}`);

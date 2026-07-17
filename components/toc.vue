@@ -267,6 +267,7 @@ export default {
     outline: none;
     margin-left: 16px;
     transition: all 0.1s ease;
+    color: #000 !important;
 }
 
 .button-hidden {
