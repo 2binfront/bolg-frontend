@@ -7,6 +7,7 @@ const loading = ref(false);
 const loadError = ref(false);
 const pageSize = ref(10);
 let resizeTimer: ReturnType<typeof setTimeout> | undefined;
+let latestLoadRequest = 0;
 
 const getResponsivePageSize = () => {
     if (!import.meta.client) return 10;
@@ -55,6 +56,7 @@ const visiblePages = computed(() => {
 });
 
 const loadArticles = async () => {
+    const requestId = ++latestLoadRequest;
     loading.value = true;
     loadError.value = false;
     try {
@@ -65,24 +67,38 @@ const loadArticles = async () => {
             tagId: route.query.tagId ? toPositiveInteger(route.query.tagId, 0) || undefined : undefined,
         });
 
-        if (articleStore.pagination.totalPages > 0 && currentPage.value > articleStore.pagination.totalPages) {
-            await changePage(articleStore.pagination.totalPages);
+        // A newer route/page-size change has already started another request.
+        // Do not let this response trigger a correction based on newer data.
+        if (requestId !== latestLoadRequest) return;
+
+        const lastPage = articleStore.pagination.totalPages;
+        if (lastPage > 0 && currentPage.value > lastPage) {
+            await changePage(lastPage);
+        } else if (lastPage === 0 && currentPage.value !== 1) {
+            await router.replace({
+                query: {
+                    ...route.query,
+                    page: undefined,
+                },
+            });
         }
     } catch {
+        if (requestId !== latestLoadRequest) return;
         loadError.value = true;
     } finally {
-        loading.value = false;
+        if (requestId === latestLoadRequest) loading.value = false;
     }
 };
 
 const changePage = async (page: number) => {
-    if (page < 1 || page > articleStore.pagination.totalPages || page === currentPage.value) {
+    const nextPage = Math.trunc(Number(page));
+    if (!Number.isInteger(nextPage) || nextPage < 1 || nextPage > articleStore.pagination.totalPages || nextPage === currentPage.value) {
         return;
     }
     await router.push({
         query: {
             ...route.query,
-            page: page === 1 ? undefined : String(page),
+            page: nextPage === 1 ? undefined : String(nextPage),
         },
     });
 };

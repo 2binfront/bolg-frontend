@@ -1,5 +1,9 @@
 import type { ArticleInfo, ArticleQuery, Category, PaginatedResponse, Tag } from '~/interface';
 
+// 页面尺寸会随窗口变化，短时间内可能触发多次请求。只允许最后一次请求
+// 更新列表，避免旧响应覆盖最新的分页结果。
+let latestArticleRequest = 0;
+
 export const useArticleStore = defineStore('articleStore', {
   state: (): {
     curArticle: ArticleInfo;
@@ -32,10 +36,14 @@ export const useArticleStore = defineStore('articleStore', {
   }),
   actions: {
     async getArticles(query: ArticleQuery = {}) {
+      const requestId = ++latestArticleRequest;
       try {
         const response = await $fetch<PaginatedResponse<ArticleInfo>>(`/api/blog/article`, {
           query,
         });
+
+        if (requestId !== latestArticleRequest) return;
+
         this.allArticles = response.items;
         this.pagination = {
           total: response.total,
