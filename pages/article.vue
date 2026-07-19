@@ -257,7 +257,7 @@ const handleContentImageLoad = (event: Event) => {
                                 <span class="time-string">{{
                                     `Created at ${formatTime(article.create_date, 's')}, Updated at
                                     ${formatTime(article.write_date, 's')}`
-                                    }}</span>
+                                }}</span>
                                 <div class="language-switcher" role="group" aria-label="Content language">
                                     <button type="button" :class="{ active: displayLanguage === 'zh' }"
                                         @click="displayLanguage = 'zh'">中文</button>
@@ -286,7 +286,7 @@ const handleContentImageLoad = (event: Event) => {
                                         @click="displayLanguage = 'zh'">中文</button>
                                     <button type="button" :disabled="!hasEnglishContent"
                                         :class="{ active: displayLanguage === 'en' }"
-                                        @click="displayLanguage = 'en'">English</button>
+                                        @click="displayLanguage = 'en'">En</button>
                                 </div>
                             </div>
                         </div>
